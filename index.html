@@ -8,7 +8,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Cesta">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231A535C'/%3E%3Cpath d='M27 14h10v13h13v10H37v13H27V37H14V27h13z' fill='%234ECDC4'/%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231A535C'/%3E%3Cpath d='M27 14h10v13h13v10H37v13H27V37H14V27h13z' fill='%234ECDC4'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="icone-180.png">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
 <style>
@@ -19,7 +20,7 @@
   --escura: #1A535C; --escura-rgb: 26, 83, 92;
   --acento: #4ECDC4; --acento-rgb: 78, 205, 196;
   --fundo: #F7FFF7;
-  --alerta: #FF6B6B; --alerta-rgb: 255, 107, 107; --sobre-alerta: #ffffff;
+  --alerta: #FF6B6B; --alerta-rgb: 255, 107, 107; --sobre-alerta: #3b0a0a;
   --selo: #FFE66D;
   --vencedor: #1A535C; --sobre-escura: #ffffff; --sobre-acento: #1A535C;
   --texto: #133b41;
@@ -60,7 +61,7 @@ p { margin: 0; }
 a { color: var(--escura); font-weight: 700; }
 .label { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--escura); font-weight: 800; }
 .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
-.nota { font-size: .8rem; color: rgba(var(--escura-rgb), .72); }
+.nota { font-size: .8rem; color: rgba(var(--escura-rgb), .85); }
 .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .grow { flex: 1 1 160px; min-width: 0; }
 [hidden] { display: none !important; }
@@ -78,7 +79,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .marca-sub { font-size: .7rem; color: rgba(255,255,255,.78); display: block; font-weight: 500; }
 .paletas { display: flex; gap: 6px; overflow-x: auto; padding-block: 2px; margin: 0 calc(-1 * max(14px, env(safe-area-inset-left, 0px))); padding-inline: max(14px, env(safe-area-inset-left, 0px)); scrollbar-width: none; }
 .paletas::-webkit-scrollbar { display: none; }
-.pal { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px 5px 6px; min-height: 32px; border-radius: 999px;
+.pal { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px 5px 6px; min-height: 40px; border-radius: 999px;
   font: 700 .72rem var(--font); color: rgba(255,255,255,.88); background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); cursor: pointer; }
 .pal .bolas { display: flex; }
 .pal .bolas i { width: 11px; height: 11px; border-radius: 50%; border: 1px solid rgba(255,255,255,.5); margin-left: -3px; }
@@ -88,7 +89,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .abas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: rgba(0,0,0,.18); padding: 4px; border-radius: 12px; }
 .abas a { text-align: center; text-decoration: none; color: rgba(255,255,255,.85); font-weight: 700; padding: 8px 4px; border-radius: 9px; font-size: .88rem; }
 .abas a[aria-current="page"] { background: var(--acento); color: var(--sobre-acento); font-weight: 800; }
-.faixa { display: flex; height: 6px; margin: 0 calc(-1 * max(14px, env(safe-area-inset-left, 0px))); }
+.faixa { display: flex; height: 6px; margin: 10px calc(-1 * max(14px, env(safe-area-inset-left, 0px))) 0; }
 .faixa i { flex: 1; }
 
 /* cartões e controles */
@@ -99,10 +100,10 @@ button, .btn { font: 800 .85rem var(--font); border-radius: 12px; border: 1px so
 button:active { transform: scale(.97); }
 button:disabled { opacity: .55; cursor: default; transform: none; }
 .btn-main { background: var(--escura); color: var(--sobre-escura); border-color: var(--escura); box-shadow: 0 4px 12px -4px rgba(var(--escura-rgb), .5); }
-button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--escura); outline-offset: 2px; box-shadow: 0 0 0 6px rgba(var(--acento-rgb), .55); }
 input, select { font: 600 16px var(--font); color: var(--escura); background: #ffffff; border: 1px solid rgba(var(--escura-rgb), .25); border-radius: 10px; padding: 9px 10px; min-width: 0; }
 input::placeholder { color: rgba(var(--escura-rgb), .45); }
-.x { border: none; background: rgba(var(--alerta-rgb), .15); color: var(--escura); min-height: 34px; min-width: 34px; padding: 4px 9px; font-size: 1.15rem; line-height: 1; border-radius: 10px; }
+.x { border: none; background: rgba(var(--alerta-rgb), .15); color: var(--escura); min-height: 42px; min-width: 42px; padding: 4px 9px; font-size: 1.15rem; line-height: 1; border-radius: 10px; }
 .x:hover { background: var(--alerta); color: var(--sobre-alerta); }
 details > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px; color: var(--escura); }
 details > summary::-webkit-details-marker { display: none; }
@@ -126,7 +127,7 @@ details[open] > summary::after { content: "▴"; }
 .rank-row .pos { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; font-size: .75rem; font-weight: 900; background: rgba(var(--escura-rgb), .1); color: var(--escura); }
 .rank-row .nome { font-weight: 800; color: var(--escura); font-size: .9rem; }
 .rank-row .total { font-family: var(--mono); font-weight: 800; font-size: 1rem; color: var(--escura); }
-.rank-row .det { grid-column: 2 / -1; font-size: .72rem; color: rgba(var(--escura-rgb), .7); margin-top: -2px; }
+.rank-row .det { grid-column: 2 / -1; font-size: .72rem; color: rgba(var(--escura-rgb), .85); margin-top: -2px; }
 .rank-row .trilho { grid-column: 1 / -1; height: 5px; border-radius: 3px; background: rgba(var(--escura-rgb), .1); overflow: hidden; }
 .rank-row .trilho i { display: block; height: 100%; border-radius: 3px; background: var(--escura); }
 .rank-row.first { background: var(--vencedor); border-color: var(--acento); border-width: 2px; box-shadow: 0 10px 24px -8px rgba(var(--acento-rgb), .55); }
@@ -143,10 +144,10 @@ details[open] > summary::after { content: "▴"; }
 .item-head { display: flex; gap: 8px; align-items: flex-start; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid rgba(var(--escura-rgb), .1); }
 .item-head h3 { overflow-wrap: anywhere; }
 .modo { font-size: .8rem; color: rgba(var(--escura-rgb), .75); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-weight: 600; }
-.modo select, .modo input { padding: 5px 8px; font-size: 15px; }
+.modo select, .modo input { padding: 5px 8px; font-size: 16px; }
 .qtd { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; max-width: 100%; min-width: 0; }
 .stepper { display: inline-flex; align-items: center; background: var(--fundo); border: 1px solid rgba(var(--escura-rgb), .2); border-radius: 12px; padding: 2px; }
-.stepper .passo { min-height: 34px; min-width: 34px; padding: 0; border: none; background: none; font-size: 1.1rem; border-radius: 9px; }
+.stepper .passo { min-height: 42px; min-width: 42px; padding: 0; border: none; background: none; font-size: 1.1rem; border-radius: 9px; }
 .stepper .passo:hover { background: #ffffff; }
 .qtd .alvo { width: 3.8rem; text-align: center; padding: 5px 4px; }
 .stepper input { width: 3.2rem; text-align: center; border: none; background: transparent; padding: 4px 0; font-weight: 800; -moz-appearance: textfield; }
@@ -156,19 +157,19 @@ details[open] > summary::after { content: "▴"; }
 .farm.best { background: rgba(var(--acento-rgb), .16); border-color: var(--acento); }
 .farm a.loja { color: var(--escura); text-decoration: none; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .farm a.loja span:first-child { display: inline-block; align-self: flex-start; background: var(--escura); color: var(--sobre-escura); font-size: .72rem; font-weight: 800; padding: 2px 8px; border-radius: 6px; }
-.farm a.loja span.ver { font-size: .72rem; color: rgba(var(--escura-rgb), .75); font-weight: 700; }
+.farm a.loja span.ver { font-size: .72rem; color: rgba(var(--escura-rgb), .85); font-weight: 700; }
 .farm.best a.loja span.ver::before { content: "✓ menor preço · "; color: var(--escura); font-weight: 800; }
 .farm input { width: 100%; font-family: var(--mono); font-weight: 800; text-align: right; padding: 8px 6px; }
 .farm.best input { border-color: var(--escura); }
 .farm .info { grid-column: 1 / -1; font-size: .76rem; color: rgba(var(--escura-rgb), .75); display: grid; gap: 4px; min-width: 0; }
-.farm .info select { font-size: .76rem; padding: 5px 6px; width: 100%; }
+.farm .info select { font-size: 16px; padding: 4px 6px; width: 100%; }
 .farm .info .lin { display: flex; justify-content: space-between; gap: 8px; min-width: 0; }
 .farm .info .lin span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .farm .erro-f { grid-column: 1 / -1; font-size: .74rem; color: #b42318; font-weight: 700; }
 .cols { display: grid; grid-template-columns: minmax(0, 1fr) 6.2rem 3.8rem; gap: 8px; padding: 0 10px; }
 .cols span:not(:first-child) { text-align: right; }
-.incluir { display: flex; align-items: center; gap: 6px; font-size: .78rem; color: rgba(var(--escura-rgb), .75); font-weight: 600; }
-.incluir input { width: 18px; height: 18px; accent-color: var(--escura); }
+.incluir { display: flex; align-items: center; gap: 8px; min-height: 40px; font-size: .78rem; color: rgba(var(--escura-rgb), .85); font-weight: 600; }
+.incluir input { width: 22px; height: 22px; accent-color: var(--escura); }
 article.pausado .farm, article.pausado .cols { opacity: .45; }
 
 .generico, .hist, .alerta { display: grid; gap: 6px; padding: 10px 12px; border-radius: 12px; }
@@ -193,8 +194,9 @@ article.pausado .farm, article.pausado .cols { opacity: .45; }
 
 /* busca por princípio ativo */
 .facetas { display: grid; gap: 10px; }
+.entendi { font-size: .84rem; background: rgba(var(--acento-rgb), .16); border-radius: 10px; padding: 6px 10px; color: var(--escura); }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font: 700 .78rem var(--font); border-radius: 999px; padding: 6px 12px; min-height: 34px; border: 1px solid rgba(var(--escura-rgb), .2); background: var(--fundo); color: var(--escura); }
+.chip { font: 700 .78rem var(--font); border-radius: 999px; padding: 6px 12px; min-height: 40px; border: 1px solid rgba(var(--escura-rgb), .2); background: var(--fundo); color: var(--escura); }
 .chip[aria-pressed="true"] { background: var(--escura); color: var(--sobre-escura); border-color: var(--escura); }
 .chip .n { font-family: var(--mono); font-weight: 600; opacity: .7; margin-left: 4px; }
 .prod { display: grid; gap: 8px; }
@@ -237,6 +239,19 @@ article.pausado .farm, article.pausado .cols { opacity: .45; }
   display: flex; align-items: center; gap: 12px; max-width: min(92vw, 520px); box-shadow: 0 12px 28px -8px rgba(0,0,0,.4); font-size: .86rem; font-weight: 700; }
 .toast button { min-height: 34px; padding: 6px 12px; background: var(--selo); color: #1f1a00; border: none; }
 
+/* computador: duas colunas na cesta, grade de produtos na busca */
+.col-resumo, .col-itens { display: grid; gap: 18px; align-content: start; min-width: 0; }
+@media (min-width: 1000px) {
+  main, .topo-in { max-width: 1160px; }
+  #v-cesta { grid-template-columns: minmax(340px, 400px) minmax(0, 1fr); align-items: start; }
+  .col-resumo { padding-bottom: 4px; }
+  #res-ativo { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); align-items: start; }
+  #res-ativo > :not(.prod) { grid-column: 1 / -1; }
+  #v-buscar > form { max-width: 760px; }
+  #v-ajustes { grid-template-columns: 1fr 1fr; align-items: start; }
+  #v-ajustes > .panel:first-child { grid-row: span 2; }
+}
+
 /* ajustes */
 .pal-lista { display: grid; gap: 8px; }
 .pal-op { justify-content: flex-start; gap: 12px; text-align: left; background: #ffffff; }
@@ -264,8 +279,8 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       <a href="#buscar" id="aba-buscar">Buscar</a>
       <a href="#ajustes" id="aba-ajustes">Ajustes</a>
     </nav>
-    <div class="faixa" id="faixa" aria-hidden="true"></div>
   </div>
+  <div class="faixa" id="faixa" aria-hidden="true"></div>
 </header>
 
 <main>
@@ -286,6 +301,14 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
 
   <!-- ============ CESTA ============ -->
   <section id="v-cesta" aria-labelledby="t-rank" class="vista" style="display:grid;gap:18px">
+    <div class="col-resumo">
+    <div class="panel">
+      <div class="row" style="justify-content:space-between">
+        <button class="btn-main grow" id="atualizar" type="button">Atualizar preços</button>
+      </div>
+      <div class="prog" id="prog-cesta" hidden><div class="barra"><i></i></div><p class="msg" id="msg-cesta" role="status"></p></div>
+      <p class="nota" id="quando-cesta"></p>
+    </div>
     <div class="panel">
       <div class="row" style="justify-content:space-between"><h2 id="t-rank">Quanto sai a cesta</h2><span class="label" id="rank-status"></span></div>
       <div class="rank" id="rank"></div>
@@ -304,13 +327,8 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       <p class="nota" id="rec-nota"></p>
       <div class="fretes" id="fretes"></div>
     </div>
-    <div class="panel">
-      <div class="row" style="justify-content:space-between">
-        <button class="btn-main grow" id="atualizar" type="button">Atualizar preços</button>
-      </div>
-      <div class="prog" id="prog-cesta" hidden><div class="barra"><i></i></div><p class="msg" id="msg-cesta" role="status"></p></div>
-      <p class="nota" id="quando-cesta"></p>
     </div>
+    <div class="col-itens">
     <div class="row" style="justify-content:space-between"><h2>Produtos</h2><button id="zerar" type="button">Apagar preços</button></div>
     <details class="panel" id="painel-salvas">
       <summary><b>Minhas cestas</b> <span class="nota" id="n-salvas"></span></summary>
@@ -333,17 +351,18 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       </div>
       <p class="nota">Escreva como no site: nome e dose. O robô só aceita produtos que contenham todas as palavras. Para escolher por composição, use a aba <a href="#buscar">Buscar</a>.</p>
     </form>
+    </div>
   </section>
 
   <!-- ============ BUSCAR ============ -->
   <section id="v-buscar" class="vista" style="display:grid;gap:18px" hidden>
     <form class="panel" id="form-ativo">
-      <label class="label" for="termo">Princípio ativo</label>
+      <label class="label" for="termo">Remédio ou princípio ativo</label>
       <div class="row">
-        <input id="termo" class="grow" placeholder="ex.: pseudoefedrina" autocomplete="off" autocapitalize="none">
+        <input id="termo" class="grow" placeholder="ex.: metformina XR 500mg" autocomplete="off" autocapitalize="none">
         <button class="btn-main" type="submit" id="btn-ativo">Buscar</button>
       </div>
-      <p class="nota">Consulta a tabela oficial da Anvisa (CMED) e as sete farmácias. Leva cerca de meio minuto.</p>
+      <p class="nota">Aceita substância, nome comercial, dose e forma: “metformina XR 500mg”, “glifage”, “paracetamol pseudoefedrina”. Consulta a tabela oficial da Anvisa (CMED) e as sete farmácias em cerca de meio minuto.</p>
       <div class="prog" id="prog-ativo" hidden><div class="barra"><i></i></div><p class="msg" id="msg-ativo" role="status"></p></div>
     </form>
     <form class="panel" id="form-ean">
@@ -416,6 +435,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
   ];
   // Ultrafarma não tem loja em BH: na retirada, entra o frete informado para ela
   var SEM_LOJA_BH = { ultrafarma: true };
+  var LIMITE_ITENS = 20;  // o robô atualiza até 20 produtos por pedido
   var REPO_PADRAO = "tiomoh/DrugstoreComparison";
   var EXEMPLO = { itens: [
     { busca: "Finasterida 1mg", modo: "unidade", alvo: 30, qtd: 1, precos: {} },
@@ -434,7 +454,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       var antigo = lerJSON("cesta-farmacias-v1");
       s = antigo && Array.isArray(antigo.itens) ? antigo : JSON.parse(JSON.stringify(EXEMPLO));
     }
-    s.itens.forEach(function (it) { it.precos = it.precos || {}; it.alts = it.alts || {}; it.erros = it.erros || {}; });
+    s.itens.forEach(function (it) { it.precos = it.precos || {}; it.alts = it.alts || {}; it.erros = it.erros || {}; it.alvo = it.alvo || 30; it.qtd = it.qtd || 1; it.uid = it.uid || novoUid(); });
     s.receber = s.receber || "retirar";
     s.cep = s.cep || "30350120";
     s.fretesAuto = s.fretesAuto || {};
@@ -442,17 +462,23 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     s.fretes = s.fretes || {};
     return s;
   })();
-  function salvar() { gravar(K.estado, JSON.stringify(estado)); }
+  function novoUid() { return Math.random().toString(36).slice(2, 10); }
+  function salvar() {
+    estado.itens.forEach(function (it) { it.uid = it.uid || novoUid(); });
+    gravar(K.estado, JSON.stringify(estado));
+  }
   function repo() { return (ler(K.repo) || REPO_PADRAO).trim(); }
   function token() { return (ler(K.token) || "").trim(); }
 
   /* ---------- utilidades ---------- */
   function brl(v) { return v == null ? "—" : v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); }
   function fmtIn(v) { return v == null ? "" : v.toFixed(2).replace(".", ","); }
-  function numInput(v) { if (v === "" || v == null) return null; var s = String(v).trim(); if (/,/.test(s)) s = s.replace(/\./g, "").replace(",", "."); var n = parseFloat(s); return isFinite(n) && n > 0 ? n : null; }
+  // aceita "12,50", "R$ 12,50", "12.50" e "1.234,56"
+  function numInput(v) { if (v === "" || v == null) return null; var s = String(v).replace(/[^\d,.]/g, ""); if (/,/.test(s) || /^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "").replace(",", "."); var n = parseFloat(s); return isFinite(n) && n > 0 ? n : null; }
+  function ehZero(v) { return /^\s*(r\$)?\s*0+([,.]0+)?\s*$/i.test(String(v || "")); }
   function el(tag, attrs, kids) {
     var e = document.createElement(tag);
-    for (var k in (attrs || {})) { if (k === "text") e.textContent = attrs[k]; else if (k === "class") e.className = attrs[k]; else e.setAttribute(k, attrs[k]); }
+    for (var k in (attrs || {})) { if (k === "text") e.textContent = attrs[k]; else if (k === "class") e.className = attrs[k]; else if (k === "href" && !/^(https?:|#|mailto:)/i.test(String(attrs[k]))) continue; else e.setAttribute(k, attrs[k]); }
     (kids || []).forEach(function (c) { if (c) e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
     return e;
   }
@@ -468,7 +494,9 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     opts = opts || {};
     var h = { "Authorization": "Bearer " + token(), "Accept": opts.accept || "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" };
     if (opts.body) h["Content-Type"] = "application/json";
-    return fetch("https://api.github.com/repos/" + repo() + caminho, { method: opts.method || "GET", headers: h, body: opts.body ? JSON.stringify(opts.body) : undefined, cache: "no-store" });
+    var ctl = window.AbortController ? new AbortController() : null, t = ctl ? setTimeout(function () { ctl.abort(); }, 20000) : null;
+    return fetch("https://api.github.com/repos/" + repo() + caminho, { method: opts.method || "GET", headers: h, body: opts.body ? JSON.stringify(opts.body) : undefined, cache: "no-store", signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { clearTimeout(t); return r; }, function (e) { clearTimeout(t); throw e; });
   }
   function explicaHTTP(st) {
     if (st === 401) return "A chave foi recusada pelo GitHub (expirou ou foi copiada errada). Gere outra em Ajustes.";
@@ -487,6 +515,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     function seg() { return Math.round((Date.now() - inicio) / 1000) + " s"; }
     onFase("Enviando pedido ao robô…");
     return api("/actions/workflows/busca.yml/dispatches", { method: "POST", body: { ref: "main", inputs: { id: id, pedido: JSON.stringify(pedido) } } })
+      .catch(function () { throw new Error("Sem conexão com o GitHub. Confira a internet e tente de novo."); })
       .then(function (r) { if (r.status !== 204) throw new Error(explicaHTTP(r.status)); })
       .then(function () {
         var fase = "Na fila do GitHub", rodada = 0;
@@ -501,7 +530,8 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
           }).catch(function (e) { if (/robô falhou/.test(e.message)) throw e; }) : Promise.resolve();
           return checaRun.then(function () {
             onFase(fase + "… " + seg());
-            return api("/contents/r/" + id + ".json?ref=resultados&t=" + Date.now(), { accept: "application/vnd.github.raw+json" });
+            // oscilação de rede não derruba a espera: tenta de novo
+            return api("/contents/r/" + id + ".json?ref=resultados&t=" + Date.now(), { accept: "application/vnd.github.raw+json" }).catch(function () { return { status: 0 }; });
           }).then(function (r) {
             if (r.status === 200) return r.json();
             if (r.status === 404) return espera(2500).then(volta);
@@ -519,13 +549,17 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
 
   /* ---------- cálculo da cesta ---------- */
   function ativos() { return estado.itens.filter(function (it) { return it.ativo !== false; }); }
-  // Frete: o que você digitou vale mais; senão, o que o robô simulou no carrinho para o seu CEP
+  // Frete: nas farmácias em que o robô simulou o carrinho vale o valor dele; nas outras, o que você digitou.
+  // Devolve null quando a farmácia não atende o CEP.
   function frete(f) {
     if (!ativos().length) return 0;
-    var auto = estado.fretesAuto[f.id] || {}, manual = estado.fretes[f.id];
-    if (estado.receber === "entrega") return manual != null ? manual : auto.entrega ? auto.entrega.preco : 0;
-    if (SEM_LOJA_BH[f.id]) return manual != null ? manual : auto.entrega ? auto.entrega.preco : 0;
-    if (auto.entrega && !auto.retirada && !auto.erro) return auto.entrega.preco;  // sem loja para retirar perto do CEP
+    var auto = estado.fretesAuto[f.id], manual = estado.fretes[f.id], temAuto = auto && !auto.erro;
+    if (temAuto && !auto.entrega && !auto.retirada) return null;
+    if (estado.receber === "entrega" || SEM_LOJA_BH[f.id]) {
+      if (temAuto && auto.entrega) return auto.entrega.preco;
+      return manual != null ? manual : 0;
+    }
+    if (temAuto && !auto.retirada) return auto.entrega.preco;  // sem loja para retirar perto do CEP
     return 0;
   }
   function fmtCep(c) { c = String(c || "").replace(/\D/g, ""); return c.length > 5 ? c.slice(0, 5) + "-" + c.slice(5, 8) : c; }
@@ -536,10 +570,41 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
   }
 
   /* ---------- vista: cesta ---------- */
-  function renderCesta() {
+  // Redesenhar no "change" apagava o botão que a pessoa estava clicando e tirava o foco do campo.
+  // Agora o redesenho espera o clique terminar e devolve o foco ao mesmo campo.
+  var redesenhoPendente = false, ponteiroAbaixo = false;
+  document.addEventListener("pointerdown", function () { ponteiroAbaixo = true; }, true);
+  function soltou() { ponteiroAbaixo = false; if (redesenhoPendente) setTimeout(desenharCesta, 0); }
+  document.addEventListener("pointerup", soltou, true);
+  document.addEventListener("pointercancel", soltou, true);
+  function renderCesta() { redesenhoPendente = true; if (!ponteiroAbaixo) setTimeout(desenharCesta, 0); }
+  function desenharCesta() {
+    if (!redesenhoPendente) return;
+    redesenhoPendente = false;
+    var ae = document.activeElement, focoId = ae && ae.id, ini = null, fim = null;
+    try { ini = ae.selectionStart; fim = ae.selectionEnd; } catch (e) {}
+    desenharCesta0();
+    if (focoId && ae !== document.getElementById(focoId)) {
+      var novo = document.getElementById(focoId);
+      if (novo) { novo.focus({ preventScroll: true }); try { if (ini != null) novo.setSelectionRange(ini, fim); } catch (e) {} }
+    }
+  }
+  function desenharCesta0() {
     var box = document.getElementById("itens");
     box.textContent = "";
     estado.itens.forEach(function (item, i) { box.appendChild(cartao(item, i)); });
+    // alertas cujo item saiu da cesta continuam valendo no robô: mostra para poder desligar
+    var naCesta = estado.itens.map(function (it) { return idAlerta(it.busca); });
+    var orfaos = estado.alertas.filter(function (a) { return naCesta.indexOf(a.id) < 0; });
+    if (orfaos.length) {
+      var pn = el("div", { class: "panel" }, [el("h2", { text: "Alertas de itens fora da cesta" })]);
+      orfaos.forEach(function (a) {
+        var tira = el("button", { type: "button", class: "x", "aria-label": "Remover alerta de " + a.busca, text: "×" });
+        tira.addEventListener("click", function () { mudarAlertas(function () { estado.alertas = estado.alertas.filter(function (x) { return x !== a; }); }); });
+        pn.appendChild(el("div", { class: "row", style: "justify-content:space-between" }, [el("span", { text: "🔔 " + a.busca + " · até " + brl(a.limite) + (a.ativo && diasRestantes(a) >= 0 ? "" : " · desligado") }), tira]));
+      });
+      box.appendChild(pn);
+    }
     resumo();
     renderSalvas();
     document.getElementById("quando-cesta").textContent = estado.quando ? quando(estado.quando) : "Toque em Atualizar preços para o robô consultar as sete farmácias.";
@@ -561,8 +626,8 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     var qtd = el("input", { id: "qtd-" + i, type: "number", inputmode: "numeric", min: "1", value: item.qtd || 1, "aria-label": "Quantidade" });
     function mudaQtd(v) { item.qtd = Math.max(1, Math.min(99, v || 1)); salvar(); renderCesta(); }
     qtd.addEventListener("change", function () { mudaQtd(parseInt(qtd.value, 10)); });
-    var menos = el("button", { type: "button", class: "passo", "aria-label": "Diminuir quantidade", text: "−" });
-    var mais = el("button", { type: "button", class: "passo", "aria-label": "Aumentar quantidade", text: "+" });
+    var menos = el("button", { id: "menos-" + i, type: "button", class: "passo", "aria-label": "Diminuir quantidade", text: "−" });
+    var mais = el("button", { id: "mais-" + i, type: "button", class: "passo", "aria-label": "Aumentar quantidade", text: "+" });
     menos.addEventListener("click", function () { mudaQtd((item.qtd || 1) - 1); });
     mais.addEventListener("click", function () { mudaQtd((item.qtd || 1) + 1); });
     var depois;
@@ -574,7 +639,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       depois = el("span", { text: (item.qtd || 1) > 1 ? "caixas" : "caixa" });
     }
     var extra = el("span", { class: "qtd" }, [el("span", { text: "Quantidade" }), el("span", { class: "stepper" }, [menos, qtd, mais]), depois]);
-    var rem = el("button", { class: "x", type: "button", "aria-label": "Remover " + item.busca, text: "×" });
+    var rem = el("button", { id: "rem-" + i, class: "x", type: "button", "aria-label": "Remover " + item.busca, text: "×" });
     rem.addEventListener("click", function () {
       var tirado = estado.itens.splice(i, 1)[0];
       salvar(); renderCesta();
@@ -647,6 +712,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       var total = 0, falta = 0;
       lista.forEach(function (it) { var c = custo(it, it.precos[f.id]); if (c == null) falta++; else total += c; });
       var fr = n && falta < n ? frete(f) : 0;
+      if (fr === null) return { f: f, produtos: total, frete: 0, total: 0, falta: n, n: n, foraCep: true };
       return { f: f, produtos: total, frete: fr, total: total + fr, falta: falta, n: n };
     }).sort(function (a, b) { return (a.falta - b.falta) || (a.total - b.total); });
   }
@@ -662,8 +728,10 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
         if (!best) ok = false; else { soma += best.c; usadas[best.f.id] = best.f; partes.push(it.busca + " na " + best.f.nome); }
       });
       if (!ok) continue;
-      Object.keys(usadas).forEach(function (id) { soma += frete(usadas[id]); });
-      if (!melhor || soma < melhor.soma - 0.004) melhor = { ok: true, soma: soma, partes: partes };
+      var comFrete = 0;
+      Object.keys(usadas).forEach(function (id) { var fr = frete(usadas[id]); if (fr === null) ok = false; else { soma += fr; comFrete += fr; } });
+      if (!ok) continue;
+      if (!melhor || soma < melhor.soma - 0.004) melhor = { ok: true, soma: soma, partes: partes, frete: comFrete };
     }
     return melhor || { ok: false, soma: 0, partes: [] };
   }
@@ -677,10 +745,12 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       var cheia = l.falta === 0 && n > 0;
       if (cheia) completas++;
       var nome = el("span", { class: "nome" }, [l.f.nome]);
-      if (!cheia) nome.appendChild(el("span", { class: "falta", text: l.falta === n ? "sem preços" : "faltam " + l.falta }));
-      var kids = [el("span", { class: "pos", text: cheia ? (k + 1) + "º" : "–" }), nome, el("span", { class: "total", text: l.total > 0 ? brl(l.total) : "—" })];
+      if (!cheia) nome.appendChild(el("span", { class: "falta", text: l.foraCep ? "não atende o CEP" : l.falta === n ? "sem preços" : "faltam " + l.falta }));
+      if (!n) { if (k === 0) rank.appendChild(el("p", { class: "nota", text: "Nenhum item incluído no total." })); return; }
+      var kids = [el("span", { class: "pos", text: cheia ? (k + 1) + "º" : "–" }), nome, el("span", { class: "total", text: l.total > 0 ? (cheia ? "" : "parcial ") + brl(l.total) : "—" })];
       if (l.frete > 0) kids.push(el("span", { class: "det", text: "produtos " + brl(l.produtos) + " + frete " + brl(l.frete) }));
-      if (l.total > 0) { var maxT = Math.max.apply(null, linhas.map(function (x) { return x.total; })); kids.push(el("span", { class: "trilho" }, [el("i", { style: "width:" + Math.max(8, Math.round(l.total / maxT * 100)) + "%" })])); }
+      if (cheia && estado.receber === "entrega" && !(l.frete > 0) && estado.fretes[l.f.id] == null && !(estado.fretesAuto[l.f.id] && !estado.fretesAuto[l.f.id].erro)) kids.push(el("span", { class: "det", text: "frete não informado" }));
+      if (l.total > 0 && cheia) { var maxT = Math.max.apply(null, linhas.map(function (x) { return x.total; })); kids.push(el("span", { class: "trilho" }, [el("i", { style: "width:" + Math.max(8, Math.round(l.total / maxT * 100)) + "%" })])); }
       rank.appendChild(el("div", { class: "rank-row" + (k === 0 && cheia ? " first" : "") }, kids));
     });
     var pausados = estado.itens.length - n;
@@ -690,7 +760,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     if (m.ok) {
       combo.appendChild(document.createTextNode("Melhor combinação entre farmácias: "));
       combo.appendChild(el("b", { class: "num", text: brl(m.soma) }));
-      combo.appendChild(document.createTextNode(" (" + m.partes.join("; ") + (Object.keys(estado.fretes).length || estado.receber === "entrega" ? "; já com frete" : "") + ")."));
+      combo.appendChild(document.createTextNode(" (" + m.partes.join("; ") + (m.frete > 0 ? "; já com " + brl(m.frete) + " de frete" : "") + ")."));
     } else {
       combo.textContent = "Preencha os preços para ver a melhor combinação.";
     }
@@ -725,7 +795,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       }
       if (ret && !SEM_LOJA_BH[f.id]) return;
       var inp = el("input", { id: "frete-" + f.id, inputmode: "decimal", placeholder: "R$ 0,00", value: fmtIn(estado.fretes[f.id] != null ? estado.fretes[f.id] : null), autocomplete: "off" });
-      inp.addEventListener("change", function () { var v = numInput(inp.value); if (v == null && inp.value.trim() !== "0") delete estado.fretes[f.id]; else estado.fretes[f.id] = v || 0; salvar(); resumo(); });
+      inp.addEventListener("change", function () { var v = numInput(inp.value); if (v == null && !ehZero(inp.value)) delete estado.fretes[f.id]; else estado.fretes[f.id] = v || 0; salvar(); resumo(); });
       box.appendChild(el("label", { for: "frete-" + f.id }, ["Frete " + f.nome, inp]));
     });
   }
@@ -772,10 +842,10 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     lista.forEach(function (c, k) {
       var carregar = el("button", { type: "button", text: "Carregar" });
       carregar.addEventListener("click", function () {
-        var antes = JSON.parse(JSON.stringify(estado.itens));
+        var antes = JSON.parse(JSON.stringify(estado.itens)), quandoAntes = estado.quando;
         estado.itens = JSON.parse(JSON.stringify(c.itens)); estado.quando = c.quando || null;
         salvar(); renderCesta();
-        toast("Cesta “" + c.nome + "” carregada.", "Desfazer", function () { estado.itens = antes; salvar(); renderCesta(); });
+        toast("Cesta “" + c.nome + "” carregada.", "Desfazer", function () { estado.itens = antes; estado.quando = quandoAntes; salvar(); renderCesta(); });
       });
       var apagar = el("button", { type: "button", class: "x", "aria-label": "Apagar " + c.nome, text: "×" });
       apagar.addEventListener("click", function () {
@@ -834,9 +904,12 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     FARM.forEach(function (f) { var pu = porUnidade(item.precos[f.id]); if (pu != null && (atual == null || pu < atual)) atual = pu; });
     var comp = composicao({ subs: g.subs, doses: g.doses, dose_de: g.dose_de });
     var econ = atual ? Math.round((1 - melhor.pu / atual) * 100) : null;
-    var add = el("button", { type: "button", text: "Adicionar o genérico à cesta" });
+    var buscaGen = cap(g.termo) + " genérico", jaTem = estado.itens.some(function (it) { return semAcento(it.busca) === semAcento(buscaGen); });
+    var add = el("button", { type: "button", text: jaTem ? "Genérico na cesta ✓" : "Adicionar o genérico à cesta" });
+    if (jaTem) add.disabled = true;
     add.addEventListener("click", function () {
-      var novo = { busca: g.termo + " genérico", modo: "unidade", alvo: item.alvo || melhor.o.unidades || 10, qtd: 1, precos: {}, alts: {}, erros: {} };
+      if (estado.itens.length >= LIMITE_ITENS) { toast("A cesta já tem " + LIMITE_ITENS + " itens, o máximo."); return; }
+      var novo = { uid: novoUid(), busca: buscaGen, modo: "unidade", alvo: item.alvo || melhor.o.unidades || 10, qtd: 1, precos: {}, alts: {}, erros: {} };
       Object.keys(g.ofertas).forEach(function (f) { var o = g.ofertas[f]; novo.precos[f] = { preco: o.preco, un: o.unidades, nome: o.nome, link: o.link }; });
       estado.itens.push(novo); salvar(); renderCesta(); toast("Genérico adicionado à cesta.");
     });
@@ -863,7 +936,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     var minimo = pts.reduce(function (a, b) { return b.c < a.c ? b : a; }), ult = pts[pts.length - 1];
     var dia = function (d) { return d.slice(8, 10) + "/" + d.slice(5, 7); };
     var texto = pts.length === 1 ? "O histórico começou em " + dia(ult.d) + ". A cada atualização, um ponto novo." :
-      "Hoje " + brl(ult.c) + " · menor do período " + brl(minimo.c) + " (" + dia(minimo.d) + ", " + NOME_F[minimo.f] + ")" + (ult.c <= minimo.c + 0.005 ? " · está no menor preço registrado" : "");
+      (ult.d === hojeISO() ? "Hoje " : "Último (" + dia(ult.d) + ") ") + brl(ult.c) + " · menor do período " + brl(minimo.c) + " (" + dia(minimo.d) + ", " + NOME_F[minimo.f] + ")" + (ult.c <= minimo.c + 0.005 ? " · está no menor preço registrado" : "");
     var box = el("div", { class: "hist" }, [el("span", { class: "label", text: "Histórico do menor preço · " + pts.length + (pts.length === 1 ? " dia" : " dias") }), el("p", { class: "nota", text: texto })]);
     if (pts.length > 1) box.appendChild(grafico(pts));
     return box;
@@ -885,55 +958,89 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     fim.setAttribute("cx", xy[xy.length - 1][0]); fim.setAttribute("cy", xy[xy.length - 1][1]); fim.setAttribute("r", 4); fim.setAttribute("class", "spark-fim"); svg.appendChild(fim);
     return svg;
   }
+  function podeRedesenhar() {
+    if (document.getElementById("v-cesta").hidden) return false;
+    var ae = document.activeElement;
+    if (ae && ae !== document.body && document.getElementById("v-cesta").contains(ae) && /INPUT|SELECT|TEXTAREA/.test(ae.tagName)) return false;
+    return !alertaForm;
+  }
   function carregarDados() {
     if (!token()) return;
     api("/contents/historico.json?ref=dados&t=" + Date.now(), { accept: "application/vnd.github.raw+json" })
       .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (h) { if (h) { HIST = h; gravar(K.hist, JSON.stringify(h)); if (!document.getElementById("v-cesta").hidden) renderCesta(); } })
+      .then(function (h) {
+        if (!h || JSON.stringify(h) === JSON.stringify(HIST)) return;
+        HIST = h; gravar(K.hist, JSON.stringify(h)); if (podeRedesenhar()) renderCesta();
+      })
       .catch(function () {});
     api("/contents/alertas.json?ref=dados&t=" + Date.now(), { accept: "application/vnd.github.raw+json" })
       .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (l) { if (l && !alertaEnviando) { estado.alertas = l; salvar(); if (!document.getElementById("v-cesta").hidden) renderCesta(); } })
+      .then(function (l) {
+        if (!l || alertaEnviando || JSON.stringify(l) === JSON.stringify(estado.alertas)) return;
+        estado.alertas = l; salvar(); if (podeRedesenhar()) renderCesta();
+      })
       .catch(function () {});
   }
 
   /* ---------- alertas de preço ---------- */
   var alertaEnviando = false, alertaDeNovo = false, alertaMsg = "";
   function hojeISO(somaDias) { var d = new Date(Date.now() + (somaDias || 0) * 864e5 - 3 * 36e5); return d.toISOString().slice(0, 10); }
-  function alertaDe(item) { var id = chaveHist(item.busca); return estado.alertas.filter(function (a) { return a.id === id; })[0]; }
+  function idAlerta(busca) { return chaveHist(busca).slice(0, 40); }  // o robô guarda no máximo 40 caracteres
+  function alertaDe(item) { var id = idAlerta(item.busca); return estado.alertas.filter(function (a) { return a.id === id; })[0]; }
+  // muda os alertas só se der para enviar; se o envio falhar, volta ao que era
+  function mudarAlertas(fn) {
+    if (!token()) { toast("Conecte o aparelho para usar alertas."); return; }
+    var antes = JSON.stringify(estado.alertas);
+    fn(); salvar(); enviarAlertas(antes);
+  }
   function diasRestantes(a) { return Math.round((Date.parse(a.expira) - Date.parse(hojeISO())) / 864e5); }
-  function enviarAlertas() {
+  var alertasAntesDoEnvio = null;
+  function enviarAlertas(antes) {
     if (!token()) { toast("Conecte o aparelho para usar alertas."); return; }
     if (alertaEnviando) { alertaDeNovo = true; return; }
+    alertasAntesDoEnvio = antes || alertasAntesDoEnvio;
     alertaEnviando = true; alertaMsg = "Enviando ao robô…"; renderCesta();
     pedir({ modo: "alertas", lista: estado.alertas }, function (t) { alertaMsg = t; var e = document.querySelectorAll(".alerta-msg"); Array.prototype.forEach.call(e, function (x) { x.textContent = t; }); })
-      .then(function (res) { alertaEnviando = false; alertaMsg = ""; if (!alertaDeNovo) { estado.alertas = res.alertas || estado.alertas; salvar(); } toast("Alertas salvos. O robô confere todo dia às 7h40."); })
-      .catch(function (e) { alertaEnviando = false; alertaMsg = ""; toast("Alertas não foram salvos: " + e.message); })
+      .then(function (res) { alertaEnviando = false; alertaMsg = ""; alertasAntesDoEnvio = null; if (!alertaDeNovo) { estado.alertas = res.alertas || estado.alertas; salvar(); } toast("Alertas salvos. O robô confere todo dia às 7h40."); })
+      .catch(function (e) {
+        alertaEnviando = false; alertaMsg = ""; alertaDeNovo = false;
+        if (alertasAntesDoEnvio) { estado.alertas = JSON.parse(alertasAntesDoEnvio); salvar(); alertasAntesDoEnvio = null; }
+        toast("Alerta não foi salvo: " + e.message);
+      })
       .then(function () { renderCesta(); if (alertaDeNovo) { alertaDeNovo = false; enviarAlertas(); } });
   }
+  var alertaForm = null;  // formulário de alerta aberto (sobrevive ao redesenho)
   function boxAlerta(item) {
     var a = alertaDe(item), box = el("div", { class: "alerta" });
     var atual = null; FARM.forEach(function (f) { var c = custo(item, item.precos[f.id]); if (c != null && (atual == null || c < atual)) atual = c; });
     if (!a) {
       var abrir = el("button", { type: "button", class: "btn-alerta", text: "🔔 Criar alerta de preço" });
-      abrir.addEventListener("click", function () {
-        box.textContent = "";
-        var lim = el("input", { inputmode: "decimal", value: atual ? fmtIn(Math.floor(atual * 0.9 * 100) / 100) : "", placeholder: "R$", "aria-label": "Avisar quando custar até" });
-        var dias = el("input", { type: "number", inputmode: "numeric", min: "1", max: "365", value: "30", "aria-label": "Por quantos dias" });
+      var idA = idAlerta(item.busca);
+      function formulario() {
+        box.textContent = ""; box.classList.add("editando");
+        if (!alertaForm || alertaForm.id !== idA) alertaForm = { id: idA, lim: atual ? fmtIn(Math.floor(atual * 0.9 * 100) / 100) : "", dias: "30" };
+        var lim = el("input", { id: "alim-" + idA, inputmode: "decimal", value: alertaForm.lim, placeholder: "R$", "aria-label": "Avisar quando custar até" });
+        var dias = el("input", { id: "adias-" + idA, type: "number", inputmode: "numeric", min: "1", max: "365", value: alertaForm.dias, "aria-label": "Por quantos dias" });
+        lim.addEventListener("input", function () { alertaForm.lim = lim.value; });
+        dias.addEventListener("input", function () { alertaForm.dias = dias.value; });
         var ok = el("button", { type: "button", class: "btn-main", text: "Ligar alerta" });
         var cancela = el("button", { type: "button", text: "Cancelar" });
-        cancela.addEventListener("click", function () { renderCesta(); });
+        cancela.addEventListener("click", function () { alertaForm = null; renderCesta(); });
         ok.addEventListener("click", function () {
           var v = numInput(lim.value), n = Math.max(1, Math.min(365, parseInt(dias.value, 10) || 30));
           if (v == null) { lim.focus(); return; }
-          estado.alertas = estado.alertas.filter(function (x) { return x.id !== chaveHist(item.busca); });
-          estado.alertas.push({ id: chaveHist(item.busca), busca: item.busca, modo: item.modo, alvo: item.alvo, qtd: item.qtd || 1, eans: item.eans || [], limite: v, expira: hojeISO(n), ativo: true });
-          salvar(); enviarAlertas();
+          alertaForm = null;
+          mudarAlertas(function () {
+            estado.alertas = estado.alertas.filter(function (x) { return x.id !== idAlerta(item.busca); });
+            estado.alertas.push({ id: idAlerta(item.busca), busca: item.busca, modo: item.modo, alvo: item.alvo, qtd: item.qtd || 1, eans: item.eans || [], limite: v, expira: hojeISO(n), ativo: true });
+          });
         });
         box.appendChild(el("p", { class: "nota", text: "Aviso por notificação do GitHub (no app e por e-mail) quando o custo desta linha, na quantidade escolhida, ficar igual ou abaixo de:" }));
         box.appendChild(el("div", { class: "row" }, [el("label", { class: "campo" }, ["Até R$", lim]), el("label", { class: "campo" }, ["por", dias, "dias"])]));
         box.appendChild(el("div", { class: "row" }, [ok, cancela]));
-      });
+      }
+      if (alertaForm && alertaForm.id === idA) { formulario(); return box; }
+      abrir.addEventListener("click", formulario);
       box.appendChild(abrir);
       return box;
     }
@@ -941,14 +1048,15 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     var estadoTxt = !a.ativo ? "desligado" : restam < 0 ? "encerrado em " + a.expira.split("-").reverse().slice(0, 2).join("/") : restam === 0 ? "termina hoje" : "mais " + restam + (restam === 1 ? " dia" : " dias");
     var chave = el("input", { type: "checkbox", "aria-label": "Alerta ligado" }); chave.checked = vigente;
     chave.addEventListener("change", function () {
-      a.ativo = chave.checked;
-      if (chave.checked && restam < 0) a.expira = hojeISO(30);
-      salvar(); enviarAlertas();
+      var liga = chave.checked;
+      mudarAlertas(function () { a.ativo = liga; if (liga && restam < 0) a.expira = hojeISO(30); });
+      if (!token()) chave.checked = !liga;
     });
     var mais = el("button", { type: "button", text: "+30 dias" });
-    mais.addEventListener("click", function () { a.expira = hojeISO(Math.max(0, restam) + 30); a.ativo = true; salvar(); enviarAlertas(); });
+    if (alertaEnviando) { mais.disabled = true; chave.disabled = true; }
+    mais.addEventListener("click", function () { mudarAlertas(function () { a.expira = hojeISO(Math.max(0, restam) + 30); a.ativo = true; }); });
     var tira = el("button", { type: "button", class: "x", "aria-label": "Remover alerta", text: "×" });
-    tira.addEventListener("click", function () { estado.alertas = estado.alertas.filter(function (x) { return x !== a; }); salvar(); enviarAlertas(); });
+    tira.addEventListener("click", function () { mudarAlertas(function () { estado.alertas = estado.alertas.filter(function (x) { return x !== a; }); }); });
     box.className = "alerta" + (vigente ? " on" : "");
     box.appendChild(el("div", { class: "row", style: "justify-content:space-between" }, [
       el("label", { class: "incluir" }, [chave, "🔔 Alerta até " + brl(a.limite) + " · " + estadoTxt]), el("div", { class: "row" }, [mais, tira])
@@ -960,8 +1068,8 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
 
   function aplicarCesta(res) {
     (res.itens || []).forEach(function (r, i) {
-      var it = estado.itens[i];
-      if (!it || it.busca.trim().toLowerCase() !== r.busca.trim().toLowerCase()) {
+      var it = r.uid ? estado.itens.filter(function (x) { return x.uid === r.uid; })[0] : estado.itens[i];
+      if (!r.uid && (!it || it.busca.trim().toLowerCase() !== r.busca.trim().toLowerCase())) {
         it = estado.itens.filter(function (x) { return x.busca.trim().toLowerCase() === r.busca.trim().toLowerCase(); })[0];
       }
       if (!it) return;
@@ -971,7 +1079,8 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
         if (!v) return;
         if (v.erro) { it.erros[f.id] = v.erro; delete it.precos[f.id]; return; }
         it.alts[f.id] = v.ofertas || [];
-        var o = (v.ofertas || [])[0];
+        var ant = it.precos[f.id];  // mantém o produto que você escolheu na lista, se ele ainda aparece
+        var o = (ant && ant.link && (v.ofertas || []).filter(function (x) { return x.link === ant.link; })[0]) || (v.ofertas || [])[0];
         if (o) it.precos[f.id] = { preco: o.preco, un: o.unidades, nome: o.nome, link: o.link };
         else delete it.precos[f.id];
       });
@@ -985,12 +1094,13 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
   document.getElementById("atualizar").addEventListener("click", function () {
     if (ocupado || !estado.itens.length) return;
     var btn = this, prog = document.getElementById("prog-cesta"), msg = document.getElementById("msg-cesta");
-    ocupado = true; btn.disabled = true; prog.hidden = false; msg.className = "msg";
-    var itens = estado.itens.map(function (it) { return { busca: it.busca, modo: it.modo, alvo: it.alvo, qtd: it.qtd || 1, eans: it.eans || [] }; });
+    ocupado = true; btn.disabled = true; prog.hidden = false; msg.className = "msg"; prog.querySelector(".barra").hidden = false;
+    if (estado.itens.length > LIMITE_ITENS) toast("Só os " + LIMITE_ITENS + " primeiros produtos são atualizados por vez.");
+    var itens = estado.itens.slice(0, LIMITE_ITENS).map(function (it) { return { uid: it.uid, busca: it.busca, modo: it.modo, alvo: it.alvo, qtd: it.qtd || 1, eans: it.eans || [] }; });
     pedir({ modo: "cesta", itens: itens, cep: estado.cep }, function (t) { msg.textContent = t; })
       .then(function (res) { aplicarCesta(res); renderCesta(); prog.hidden = true; carregarDados(); })
       .catch(function (e) { msg.className = "msg err"; msg.textContent = e.message; prog.querySelector(".barra").hidden = true; })
-      .then(function () { ocupado = false; btn.disabled = false; setTimeout(function () { prog.querySelector(".barra").hidden = false; }, 0); });
+      .then(function () { ocupado = false; btn.disabled = false; });
   });
 
   document.getElementById("novo").addEventListener("submit", function (ev) {
@@ -1002,25 +1112,55 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
   });
   var zerarArmado = false;
   document.getElementById("zerar").addEventListener("click", function () {
-    if (!zerarArmado) { zerarArmado = true; this.textContent = "Toque de novo para apagar"; return; }
-    estado.itens.forEach(function (it) { it.precos = {}; it.alts = {}; it.erros = {}; });
-    estado.quando = null; zerarArmado = false; this.textContent = "Apagar preços"; salvar(); renderCesta();
+    var btn = this;
+    if (!zerarArmado) {
+      zerarArmado = true; btn.textContent = "Toque de novo para apagar";
+      setTimeout(function () { zerarArmado = false; btn.textContent = "Apagar preços"; }, 4000);
+      return;
+    }
+    var copia = JSON.stringify({ itens: estado.itens, quando: estado.quando, fretesAuto: estado.fretesAuto });
+    estado.itens.forEach(function (it) { it.precos = {}; it.alts = {}; it.erros = {}; it.generico = null; });
+    estado.quando = null; estado.fretesAuto = {}; zerarArmado = false; btn.textContent = "Apagar preços"; salvar(); renderCesta();
+    toast("Preços apagados.", "Desfazer", function () { var c = JSON.parse(copia); estado.itens = c.itens; estado.quando = c.quando; estado.fretesAuto = c.fretesAuto; salvar(); renderCesta(); });
   });
 
   /* ---------- vista: buscar por princípio ativo ---------- */
   var ultima = lerJSON(K.ativo);
-  var filtros = { comp: null, dose: null, forma: null };
+  var filtros = (ultima && ultima.filtros) || { comp: null, dose: null, forma: null, tipo: null };
+  function mudarFiltro(chave, v) { filtros[chave] = v; if (ultima) { ultima.filtros = filtros; gravar(K.ativo, JSON.stringify(ultima)); } renderAtivo(); }
 
-  function semAcento(s) { return (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
+  function nomeTipo(t) {
+    t = semAcento(t || "");
+    return t.indexOf("gener") === 0 ? "genérico" : t === "similar" ? "similar" : t === "novo" || t.indexOf("refer") === 0 ? "referência" : t ? t : "não informado";
+  }
+  // Aplica o que o robô entendeu do texto digitado (forma, dose, tipo) como filtros iniciais
+  function filtrosDoPedido(res) {
+    var f = { comp: null, dose: null, forma: null, tipo: null }, partes = [cap(res.termo)];
+    var ped = res.pedido || {};
+    if (ped.marca) partes[0] = cap(res.termo) + " (" + ped.marca + ")";
+    if (ped.forma) { f.forma = "~" + ped.forma; partes.push(ped.forma); }
+    if (ped.tipo) { f.tipo = nomeTipo(ped.tipo); partes.push(f.tipo); }
+    if (ped.doses && ped.doses.length) {
+      var alvo = virgula(ped.doses[0]);
+      if ((res.produtos || []).some(function (p) { return facetaDose(p, res.termo) === alvo; })) f.dose = alvo;
+      partes.push(alvo);
+    }
+    if (ped.unidades) partes.push(ped.unidades + " unidades");
+    return { filtros: f, entendi: partes.length > 1 || ped.marca ? partes.join(" · ") : null };
+  }
+  function semAcento(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
   function virgula(s) { return String(s).replace(/(\d)\.(\d)/g, "$1,$2"); }
+  // o termo pode ter mais de uma substância ("paracetamol pseudoefedrina")
+  function palavrasTermo(termo) { return semAcento(termo).split(/\s+/).filter(function (w) { return w.length > 2; }); }
   function facetaComp(p, termo) {
-    var t = semAcento(termo), outros = p.subs.filter(function (s) { return s.indexOf(t) < 0; });
+    var inteiro = semAcento(termo).trim(), ws = p.subs.indexOf(inteiro) >= 0 ? [inteiro] : palavrasTermo(termo), outros = p.subs.filter(function (s) { return !ws.some(function (w) { return s.indexOf(w) >= 0; }); });
     return outros.length ? "+ " + outros.join(" + ") : "só " + termo;
   }
   function facetaDose(p, termo) {
-    var t = semAcento(termo);
+    var t = p.subs.indexOf(semAcento(termo).trim()) >= 0 ? semAcento(termo).trim() : palavrasTermo(termo)[0] || semAcento(termo);
     if (p.dose_de) { for (var s in p.dose_de) if (s.indexOf(t) >= 0) return virgula(p.dose_de[s]); }
     if (p.subs.length === 1 && p.doses.length === 1) return virgula(p.doses[0]);
+    if (p.subs.length === p.doses.length) { for (var k = 0; k < p.subs.length; k++) if (p.subs[k].indexOf(t) >= 0) return virgula(p.doses[k]); }
     if (p.doses.length) return virgula(p.doses.map(function (d) { return d.split(" ")[0]; }).join(" + ") + " " + p.doses[0].split(" ").slice(1).join(" "));
     return "não informada";
   }
@@ -1041,28 +1181,36 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       return;
     }
     var termo = ultima.termo, prods = ultima.produtos || [];
-    var fC = {}, fD = {}, fF = {};
+    var fC = {}, fD = {}, fF = {}, fT = {};
     prods.forEach(function (p) {
-      p._c = facetaComp(p, termo); p._d = facetaDose(p, termo); p._f = p.forma;
+      p._c = facetaComp(p, termo); p._d = facetaDose(p, termo); p._f = p.forma; p._t = nomeTipo(p.tipo);
     });
+    // filtro com "~" no início vale por trecho: "~liberação prolongada" pega comprimido e cápsula
+    function bate(valor, filtro) { return !filtro || (filtro.charAt(0) === "~" ? valor.indexOf(filtro.slice(1)) >= 0 : valor === filtro); }
     function passa(p, ignora) {
-      return (ignora === "comp" || !filtros.comp || p._c === filtros.comp) &&
-             (ignora === "dose" || !filtros.dose || p._d === filtros.dose) &&
-             (ignora === "forma" || !filtros.forma || p._f === filtros.forma);
+      return (ignora === "comp" || bate(p._c, filtros.comp)) && (ignora === "dose" || bate(p._d, filtros.dose)) &&
+             (ignora === "forma" || bate(p._f, filtros.forma)) && (ignora === "tipo" || bate(p._t, filtros.tipo));
     }
     prods.forEach(function (p) {
       if (passa(p, "comp")) fC[p._c] = (fC[p._c] || 0) + 1;
       if (passa(p, "dose")) fD[p._d] = (fD[p._d] || 0) + 1;
       if (passa(p, "forma")) fF[p._f] = (fF[p._f] || 0) + 1;
+      if (passa(p, "tipo")) fT[p._t] = (fT[p._t] || 0) + 1;
     });
     function grupo(titulo, chave, contagem) {
       var chips = el("div", { class: "chips" });
       var todos = el("button", { class: "chip", type: "button", "aria-pressed": String(!filtros[chave]), text: "Todos" });
-      todos.addEventListener("click", function () { filtros[chave] = null; renderAtivo(); });
+      todos.addEventListener("click", function () { mudarFiltro(chave, null); });
       chips.appendChild(todos);
+      if (filtros[chave] && filtros[chave].charAt(0) === "~") {
+        var amplo = el("button", { class: "chip", type: "button", "aria-pressed": "true", text: "qualquer " + filtros[chave].slice(1) });
+        amplo.addEventListener("click", function () { mudarFiltro(chave, null); });
+        chips.appendChild(amplo);
+      }
       Object.keys(contagem).sort(function (a, b) { return a.localeCompare(b, "pt-BR", { numeric: true }); }).forEach(function (v) {
+        if (filtros[chave] === "~" + v) return;  // já coberto por "qualquer …"
         var c = el("button", { class: "chip", type: "button", "aria-pressed": String(filtros[chave] === v) }, [v, el("span", { class: "n", text: String(contagem[v]) })]);
-        c.addEventListener("click", function () { filtros[chave] = filtros[chave] === v ? null : v; renderAtivo(); });
+        c.addEventListener("click", function () { mudarFiltro(chave, filtros[chave] === v ? null : v); });
         chips.appendChild(c);
       });
       return el("div", { style: "display:grid;gap:6px" }, [el("span", { class: "label", text: titulo }), chips]);
@@ -1070,13 +1218,15 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     var visiveis = prods.filter(function (p) { return passa(p); });
     var cab = el("div", { class: "panel facetas" }, [
       el("div", { class: "row", style: "justify-content:space-between" }, [el("h2", { text: ultima.codigo ? "Código " + ultima.codigo : cap(termo) }), el("span", { class: "label", text: visiveis.length + " de " + prods.length + " produtos" })]),
-      grupo("Compostos associados", "comp", fC), grupo("Dose de " + termo, "dose", fD), grupo("Forma", "forma", fF),
+      ultima.entendi ? el("p", { class: "entendi" }, ["Entendi: ", el("b", { text: ultima.entendi })]) : null,
+      grupo("Compostos associados", "comp", fC), grupo("Dose de " + termo, "dose", fD), grupo("Forma", "forma", fF), grupo("Tipo", "tipo", fT),
       el("p", { class: "nota", text: quando(ultima.quando) + " Composição pela tabela oficial da Anvisa (CMED)." })
     ]);
     box.appendChild(cab);
     var erros = Object.keys(ultima.erros || {});
     if (erros.length) box.appendChild(el("p", { class: "aviso", text: "Não consegui consultar: " + erros.map(function (f) { return NOME_F[f] || f; }).join(", ") + ". Os preços dessas farmácias podem estar faltando." }));
-    if (!prods.length) box.appendChild(el("div", { class: "panel" }, [el("p", { text: "Nenhum produto encontrado. Confira a grafia da substância (sem o sal: “pseudoefedrina”, não “cloridrato de pseudoefedrina”)." })]));
+    if (!prods.length) box.appendChild(el("div", { class: "panel" }, [el("p", { text: "Nenhum produto encontrado. Confira a grafia da substância ou do nome comercial (sem o sal: “metformina”, não “cloridrato de metformina”)." })]));
+    else if (!visiveis.length) box.appendChild(el("div", { class: "panel" }, [el("p", { text: "Nenhum produto com esses filtros. Toque em “Todos” em algum grupo para ampliar." })]));
     visiveis.forEach(function (p) { box.appendChild(cartaoProduto(p, termo)); });
   }
 
@@ -1098,7 +1248,11 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     var jaNaCesta = estado.itens.some(function (it) { return it._chave === chaveProduto(p); });
     var add = el("button", { class: jaNaCesta ? "" : "btn-main", type: "button", text: jaNaCesta ? "Na cesta ✓" : "Adicionar à cesta" });
     if (jaNaCesta) add.disabled = true;
-    add.addEventListener("click", function () { adicionarDaBusca(p); add.textContent = "Na cesta ✓"; add.className = ""; add.disabled = true; });
+    add.addEventListener("click", function () {
+      if (estado.itens.length >= LIMITE_ITENS) { toast("A cesta já tem " + LIMITE_ITENS + " itens, o máximo."); return; }
+      adicionarDaBusca(p); add.textContent = "Na cesta ✓"; add.className = ""; add.disabled = true;
+      toast("Adicionado à cesta.", "Ver cesta", function () { location.hash = "#cesta"; });
+    });
     return el("article", { class: "panel prod" }, [
       el("div", { class: "prod-head" }, [
         el("div", { style: "display:grid;gap:4px;min-width:0" }, [el("h3", { text: p.nome }), el("p", { class: "comp", text: composicao(p) })]),
@@ -1119,7 +1273,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     return base;
   }
   function adicionarDaBusca(p) {
-    var it = { busca: p.termo || termoCesta(p), modo: "unidade", alvo: p.unidades || 10, qtd: 1, precos: {}, alts: {}, erros: {}, eans: p.eans || [], _chave: chaveProduto(p) };
+    var it = { busca: p.termo || termoCesta(p), modo: p.unidades ? "unidade" : "caixa", alvo: p.unidades || 10, qtd: 1, precos: {}, alts: {}, erros: {}, eans: p.eans || [], _chave: chaveProduto(p) };
     Object.keys(p.ofertas).forEach(function (f) { var o = p.ofertas[f]; it.precos[f] = { preco: o.preco, un: p.unidades, nome: o.nome, link: o.link }; });
     estado.itens.push(it);
     salvar();
@@ -1127,16 +1281,17 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
 
   document.getElementById("form-ativo").addEventListener("submit", function (ev) {
     ev.preventDefault();
-    if (ocupado) return;
+    if (ocupado) { toast("Espere a busca em andamento terminar."); return; }
     var campo = document.getElementById("termo"), termo = campo.value.trim();
     if (!termo) { campo.focus(); return; }
     var btn = document.getElementById("btn-ativo"), prog = document.getElementById("prog-ativo"), msg = document.getElementById("msg-ativo");
     ocupado = true; btn.disabled = true; prog.hidden = false; msg.className = "msg"; prog.querySelector(".barra").hidden = false;
     pedir({ modo: "ativo", termo: termo }, function (t) { msg.textContent = t; })
       .then(function (res) {
-        ultima = { termo: res.termo, produtos: res.produtos, erros: res.erros, quando: res.quando };
+        var fp = filtrosDoPedido(res);
+        filtros = fp.filtros;
+        ultima = { termo: res.termo, produtos: res.produtos, erros: res.erros, quando: res.quando, entendi: fp.entendi, filtros: filtros };
         gravar(K.ativo, JSON.stringify(ultima));
-        filtros = { comp: null, dose: null, forma: null };
         prog.hidden = true; renderAtivo();
       })
       .catch(function (e) { msg.className = "msg err"; msg.textContent = e.message; prog.querySelector(".barra").hidden = true; })
@@ -1144,8 +1299,9 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
   });
 
   /* ---------- código de barras ---------- */
-  var leitor = { stream: null, zx: null, timer: null };
+  var leitor = { stream: null, zx: null, timer: null, sessao: 0 };
   function pararLeitor() {
+    leitor.sessao++;  // callbacks atrasados da sessão anterior param sozinhos
     clearTimeout(leitor.timer);
     if (leitor.zx) { try { leitor.zx.reset(); } catch (e) {} leitor.zx = null; }
     if (leitor.stream) { leitor.stream.getTracks().forEach(function (t) { t.stop(); }); leitor.stream = null; }
@@ -1169,31 +1325,38 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
   document.getElementById("ler-codigo").addEventListener("click", function () {
     var video = document.getElementById("video"), msg = document.getElementById("msg-scanner");
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { toast("Este navegador não libera a câmera. Digite o código."); return; }
+    pararLeitor();
+    var sessao = leitor.sessao, viva = function () { return sessao === leitor.sessao; };
     document.getElementById("scanner").hidden = false;
     msg.textContent = "Abrindo a câmera…";
     if ("BarcodeDetector" in window) {
       var det = new window.BarcodeDetector({ formats: ["ean_13", "ean_8", "upc_a"] });
       navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function (st) {
+        if (!viva()) { st.getTracks().forEach(function (t) { t.stop(); }); throw new Error("fechado"); }
         leitor.stream = st; video.srcObject = st; return video.play();
       }).then(function () {
+        if (!viva()) return;
         msg.textContent = "Aponte para o código de barras da caixa.";
         (function olha() {
+          if (!viva()) return;
           det.detect(video).then(function (r) {
+            if (!viva()) return;
             if (r && r.length) achouCodigo(r[0].rawValue); else leitor.timer = setTimeout(olha, 250);
-          }).catch(function () { leitor.timer = setTimeout(olha, 400); });
+          }).catch(function () { if (viva()) leitor.timer = setTimeout(olha, 400); });
         })();
-      }).catch(function () { pararLeitor(); toast("Câmera não liberada. Permita o acesso ou digite o código."); });
+      }).catch(function () { if (!viva()) return; pararLeitor(); toast("Câmera não liberada. Permita o acesso ou digite o código."); });
       return;
     }
     carregarZXing().then(function () {  // iPhone e navegadores sem BarcodeDetector
+      if (!viva()) return;
       var dicas = new Map();
       dicas.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8, ZXing.BarcodeFormat.UPC_A]);
       leitor.zx = new ZXing.BrowserMultiFormatReader(dicas);
       msg.textContent = "Aponte para o código de barras da caixa.";
       return leitor.zx.decodeFromConstraints({ video: { facingMode: "environment" } }, video, function (res) {
-        if (res) achouCodigo(res.getText());
+        if (res && viva()) achouCodigo(res.getText());
       });
-    }).catch(function () { pararLeitor(); toast("Câmera não liberada. Permita o acesso ou digite o código."); });
+    }).catch(function () { if (!viva()) return; pararLeitor(); toast("Câmera não liberada. Permita o acesso ou digite o código."); });
   });
   document.getElementById("parar-codigo").addEventListener("click", pararLeitor);
   document.getElementById("form-ean").addEventListener("submit", function (ev) {
@@ -1203,21 +1366,22 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     buscarEan(v);
   });
   function buscarEan(cod) {
-    if (ocupado) return;
+    if (ocupado) { toast("Espere a busca em andamento terminar."); return; }
     var prog = document.getElementById("prog-ean"), msg = document.getElementById("msg-ean");
     ocupado = true; prog.hidden = false; msg.className = "msg"; prog.querySelector(".barra").hidden = false;
     pedir({ modo: "ean", ean: cod }, function (t) { msg.textContent = t; })
       .then(function (res) {
         prog.hidden = true;
         if (!res.encontrado) { msg.textContent = ""; toast("Não achei o código " + cod + " nas farmácias nem na tabela da Anvisa."); return; }
-        var pr = res.produto, precos = Object.keys(res.ofertas).map(function (f) { return res.ofertas[f].preco; });
-        var p = { termo: res.termo, nome: pr.nome, subs: pr.subs || [], doses: pr.doses || [], dose_de: null, forma: pr.forma || "não informada", unidades: pr.unidades,
-          lab: pr.lab, tipo: pr.tipo, pmc: pr.pmc, apresentacao: !!pr.subs.length, confirmado: true, eans: [res.ean], ofertas: res.ofertas,
+        var pr = res.produto, subs = pr.subs || [], precos = Object.keys(res.ofertas).map(function (f) { return res.ofertas[f].preco; });
+        var p = { termo: res.termo, nome: pr.nome, subs: subs, doses: pr.doses || [], dose_de: null, forma: pr.forma || "não informada", unidades: pr.unidades,
+          lab: pr.lab, tipo: pr.tipo, pmc: pr.pmc, apresentacao: !!subs.length, confirmado: true, eans: [res.ean], ofertas: res.ofertas,
           menor: precos.length ? Math.min.apply(null, precos) : null };
         p.por_un = p.menor && p.unidades ? p.menor / p.unidades : null;
         if (!precos.length) { toast("Achei “" + pr.nome + "”, mas nenhuma farmácia está vendendo agora."); return; }
-        ultima = { termo: pr.subs[0] || pr.nome, produtos: [p], erros: {}, quando: res.quando, codigo: res.ean };
-        gravar(K.ativo, JSON.stringify(ultima)); filtros = { comp: null, dose: null, forma: null };
+        ultima = { termo: subs[0] || pr.nome, produtos: [p], erros: {}, quando: res.quando, codigo: res.ean };
+        filtros = { comp: null, dose: null, forma: null, tipo: null }; ultima.filtros = filtros;
+        gravar(K.ativo, JSON.stringify(ultima));
         renderAtivo();
       })
       .catch(function (e) { msg.className = "msg err"; msg.textContent = e.message; prog.querySelector(".barra").hidden = true; })
@@ -1248,18 +1412,24 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     v = (v || "").trim();
     if (/^•+$/.test(v)) v = token();
     if (!v) { msg.className = "msg err"; msg.textContent = "Cole a chave no campo acima."; return; }
+    var anterior = token();
     gravar(K.token, v);
     msg.textContent = "Testando…";
     api("").then(function (r) {
-      if (!r.ok) throw new Error(explicaHTTP(r.status));
+      if (!r.ok) { var e = new Error(explicaHTTP(r.status)); e.status = r.status; throw e; }
       return api("/actions/workflows/busca.yml");
     }).then(function (r) {
-      if (!r.ok) throw new Error("A chave funciona, mas não enxerga o robô de busca (" + r.status + "). Confira a permissão Actions.");
+      if (!r.ok) { var e = new Error("A chave funciona, mas não enxerga o robô de busca (" + r.status + "). Confira a permissão Actions."); e.status = r.status; throw e; }
       msg.className = "msg ok"; msg.textContent = "Pronto! Este aparelho está conectado.";
       if (campo) campo.value = "••••••••••••";
       toast("Aparelho conectado. Já pode atualizar preços e buscar.");
       setTimeout(avisoChave, 1200);
-    }).catch(function (e) { gravar(K.token, null); msg.className = "msg err"; msg.textContent = e.message; });
+      carregarDados();
+    }).catch(function (e) {
+      // chave recusada: descarta; falha de rede: mantém a chave que já funcionava
+      gravar(K.token, e.status === 401 || e.status === 403 ? null : (anterior || null));
+      msg.className = "msg err"; msg.textContent = e.status ? e.message : "Sem conexão com o GitHub. Tente de novo.";
+    });
   }
   document.getElementById("salvar-token").addEventListener("click", function () {
     var campo = document.getElementById("token");
@@ -1272,7 +1442,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
   // Colar a chave em qualquer lugar da página também conecta
   document.addEventListener("paste", function (ev) {
     var t = ((ev.clipboardData && ev.clipboardData.getData("text")) || "").trim();
-    if (token() || !/^github_pat_\w{20,}$/.test(t)) return;
+    if (token() || !/^github_pat_\w{20,}$/.test(t) || (ev.target && ev.target.id === "token")) return;
     ev.preventDefault();
     document.getElementById("token-rapido").value = t;
     conectar(t, document.getElementById("msg-rapido"), document.getElementById("token-rapido"));
