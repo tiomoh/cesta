@@ -152,6 +152,9 @@ details[open] > summary::after { content: "▴"; }
 .qtd .alvo { width: 3.8rem; text-align: center; padding: 5px 4px; }
 .stepper input { width: 3.2rem; text-align: center; border: none; background: transparent; padding: 4px 0; font-weight: 800; -moz-appearance: textfield; }
 .stepper input::-webkit-inner-spin-button, .stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+details.todas { display: grid; gap: 8px; }
+details.todas > summary { cursor: pointer; font-weight: 700; font-size: .85rem; color: var(--escura); padding: 10px 4px; min-height: 40px; list-style-position: inside; }
+details.todas[open] > summary { margin-bottom: 0; }
 .farm { display: grid; grid-template-columns: minmax(0, 1fr) 6.2rem 3.8rem; gap: 6px 8px; align-items: center; padding: 9px 10px; border-radius: 12px;
   background: rgba(var(--escura-rgb), .03); border: 1px solid rgba(var(--escura-rgb), .12); }
 .farm.best { background: rgba(var(--acento-rgb), .16); border-color: var(--acento); }
@@ -656,6 +659,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       el("div", { class: "cols label" }, [el("span", { text: "Farmácia" }), el("span", { text: "Preço" }), el("span", { text: item.modo === "unidade" ? "Unid." : "" })])
     ]);
 
+    var linhas = [];
     FARM.forEach(function (f, j) {
       var p = item.precos[f.id] || {};
       var linha = el("div", { class: "farm" + (min != null && custos[j] === min ? " best" : "") });
@@ -697,8 +701,25 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       if (extraTxt) info.appendChild(el("div", { class: "lin" }, [el("span", { text: "" }), el("span", { class: "num", text: extraTxt })]));
       if (info.childNodes.length) linha.appendChild(info);
       if (item.erros && item.erros[f.id] && p.preco == null) linha.appendChild(el("p", { class: "erro-f", text: "Não consegui consultar agora. Toque no nome para conferir no site." }));
-      card.appendChild(linha);
+      linhas.push({ el: linha, c: custos[j] });
     });
+    // No celular: só as 3 farmácias mais baratas; o resto fica em "ver todas"
+    var comPreco = linhas.filter(function (l) { return l.c != null; }).sort(function (a, b) { return a.c - b.c; });
+    if (comPreco.length < 2) {
+      linhas.forEach(function (l) { card.appendChild(l.el); });  // sem preços ainda: mostra todas para preencher
+    } else {
+      var topo = comPreco.slice(0, 3);
+      topo.forEach(function (l) { card.appendChild(l.el); });
+      var resto = linhas.filter(function (l) { return topo.indexOf(l) < 0; });
+      if (resto.length) {
+        var det = el("details", { class: "todas" });
+        if (item._todas || window.matchMedia("(min-width: 1000px)").matches) det.open = true;
+        det.appendChild(el("summary", { text: "Ver todas as farmácias (+" + resto.length + ")" }));
+        resto.forEach(function (l) { det.appendChild(l.el); });
+        det.addEventListener("toggle", function () { item._todas = det.open; });
+        card.appendChild(det);
+      }
+    }
     if (item.generico) card.appendChild(boxGenerico(item));
     var hist = boxHistorico(item);
     if (hist) card.appendChild(hist);
