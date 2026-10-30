@@ -13,25 +13,58 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
 /* Layout: app de uma coluna — abas no topo (Cesta / Buscar / Ajustes), cartões por produto, farmácias em linhas.
-   Paleta Oceanic Cactus: petróleo 1A535C, turquesa 4ECDC4, quase-branco F7FFF7, coral FF6B6B, amarelo FFE66D. */
+   Três paletas trocáveis no topo (data-paleta no <html>), cada uma com versão clara e escura:
+   Oceanic Cactus (padrão) · Soft Rainbow (arcoiris) · Golden Twilight (crepusculo). */
 :root {
-  --petroleo: #1A535C; --turquesa: #4ECDC4; --nevoa: #F7FFF7; --coral: #FF6B6B; --sol: #FFE66D;
-  --bg: var(--nevoa); --surface: #ffffff; --ink: #12393f; --muted: #4d6f73; --line: #cfe6e2;
-  --accent: var(--petroleo); --accent-ink: var(--nevoa); --soft: #e3f7f4;
-  --best: var(--sol); --best-ink: #3b3300; --warn: #c23b3b; --warn-soft: #ffe3e3;
+  --bg: #F7FFF7; --surface: #ffffff; --ink: #12393f; --muted: #4d6f73; --line: #cfe6e2;
+  --accent: #1A535C; --accent-ink: #F7FFF7; --soft: #e3f7f4;
+  --best: #FFE66D; --best-ink: #3b3300; --warn: #c23b3b; --warn-soft: #ffe3e3;
+  --barra: #4ECDC4; --foco: #4ECDC4; --logo-bg: #1A535C; --logo-fg: #4ECDC4; --link: #1A535C;
   --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --body: "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #0d2e33; --surface: #133f46; --ink: var(--nevoa); --muted: #a7cfcb; --line: #22606a;
-  --accent: var(--turquesa); --accent-ink: #082226; --soft: #17505a;
-  --best: var(--sol); --best-ink: #2e2700; --warn: var(--coral); --warn-soft: #4a2228; color-scheme: dark } }
+  --bg: #0d2e33; --surface: #133f46; --ink: #F7FFF7; --muted: #a7cfcb; --line: #22606a;
+  --accent: #4ECDC4; --accent-ink: #082226; --soft: #17505a;
+  --best: #FFE66D; --best-ink: #2e2700; --warn: #FF6B6B; --warn-soft: #4a2228; --link: #4ECDC4; color-scheme: dark } }
 :root[data-theme="dark"] {
-  --bg: #0d2e33; --surface: #133f46; --ink: var(--nevoa); --muted: #a7cfcb; --line: #22606a;
-  --accent: var(--turquesa); --accent-ink: #082226; --soft: #17505a;
-  --best: var(--sol); --best-ink: #2e2700; --warn: var(--coral); --warn-soft: #4a2228; color-scheme: dark }
+  --bg: #0d2e33; --surface: #133f46; --ink: #F7FFF7; --muted: #a7cfcb; --line: #22606a;
+  --accent: #4ECDC4; --accent-ink: #082226; --soft: #17505a;
+  --best: #FFE66D; --best-ink: #2e2700; --warn: #FF6B6B; --warn-soft: #4a2228; --link: #4ECDC4; color-scheme: dark }
+
+/* Soft Rainbow: FBF8CC FDE4CF FFCFD2 F1C0E8 CFBAF0 A3C4F3 90DBF4 8EECF5 98F5E1 B9FBC0 */
+:root[data-paleta="arcoiris"] {
+  --bg: #FDFCEB; --surface: #ffffff; --ink: #3B3363; --muted: #6B6390; --line: #E7DDF6;
+  --accent: #CFBAF0; --accent-ink: #2A2350; --soft: #F3ECFB;
+  --best: #B9FBC0; --best-ink: #1F4A26; --warn: #B8405A; --warn-soft: #FFCFD2;
+  --barra: #90DBF4; --foco: #A3C4F3; --logo-bg: #A3C4F3; --logo-fg: #FBF8CC; --link: #5B3FA8; color-scheme: light }
+@media (prefers-color-scheme: dark) { :root[data-paleta="arcoiris"]:not([data-theme="light"]) {
+  --bg: #221E36; --surface: #2D2847; --ink: #FBF8CC; --muted: #CFC6E8; --line: #463F68;
+  --accent: #CFBAF0; --accent-ink: #221E36; --soft: #3A3358;
+  --best: #B9FBC0; --best-ink: #173A1C; --warn: #FFCFD2; --warn-soft: #4A2A3A;
+  --logo-bg: #CFBAF0; --logo-fg: #2A2350; --link: #CFBAF0; color-scheme: dark } }
+:root[data-paleta="arcoiris"][data-theme="dark"] {
+  --bg: #221E36; --surface: #2D2847; --ink: #FBF8CC; --muted: #CFC6E8; --line: #463F68;
+  --accent: #CFBAF0; --accent-ink: #221E36; --soft: #3A3358;
+  --best: #B9FBC0; --best-ink: #173A1C; --warn: #FFCFD2; --warn-soft: #4A2A3A;
+  --logo-bg: #CFBAF0; --logo-fg: #2A2350; --link: #CFBAF0; color-scheme: dark }
+
+/* Golden Twilight: 000814 001D3D 003566 FFC300 FFD60A */
+:root[data-paleta="crepusculo"] {
+  --bg: #F2F6FA; --surface: #ffffff; --ink: #001D3D; --muted: #43597A; --line: #CCD8E6;
+  --accent: #003566; --accent-ink: #FFD60A; --soft: #E3EBF5;
+  --best: #FFD60A; --best-ink: #000814; --warn: #B3261E; --warn-soft: #FDE2DF;
+  --barra: #FFC300; --foco: #FFC300; --logo-bg: #001D3D; --logo-fg: #FFC300; --link: #003566; color-scheme: light }
+@media (prefers-color-scheme: dark) { :root[data-paleta="crepusculo"]:not([data-theme="light"]) {
+  --bg: #000814; --surface: #001D3D; --ink: #F2F6FA; --muted: #9FB3CC; --line: #003566;
+  --accent: #FFC300; --accent-ink: #000814; --soft: #002B52;
+  --best: #FFD60A; --best-ink: #000814; --warn: #FF8A80; --warn-soft: #3A1520; --link: #FFC300; color-scheme: dark } }
+:root[data-paleta="crepusculo"][data-theme="dark"] {
+  --bg: #000814; --surface: #001D3D; --ink: #F2F6FA; --muted: #9FB3CC; --line: #003566;
+  --accent: #FFC300; --accent-ink: #000814; --soft: #002B52;
+  --best: #FFD60A; --best-ink: #000814; --warn: #FF8A80; --warn-soft: #3A1520; --link: #FFC300; color-scheme: dark }
 
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
@@ -40,11 +73,11 @@ body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 var(
   padding-top: env(safe-area-inset-top, 0px); padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px)); }
 main { max-width: 640px; margin: 0 auto; display: grid; gap: 18px; }
 h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
-h1 { font-size: 1.6rem; font-weight: 800; }
+h1 { font-size: 1.45rem; font-weight: 800; line-height: 1.1; }
 h2 { font-size: 1.12rem; font-weight: 600; }
 h3 { font-size: 1rem; font-weight: 600; }
 p { margin: 0; }
-a { color: var(--accent); }
+a { color: var(--link); }
 .label { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
 .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 .nota { font-size: .84rem; color: var(--muted); }
@@ -70,15 +103,14 @@ button, .btn { font: 700 .95rem var(--body); border-radius: 9px; border: 1px sol
   padding: 10px 14px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; }
 button:disabled { opacity: .55; cursor: default; }
 .btn-main { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-.btn-coral { background: var(--coral); color: #2b0606; border-color: var(--coral); }
-button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--turquesa); outline-offset: 2px; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; }
 input, select { font: 16px var(--body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; min-width: 0; }
 .x { border: none; background: none; color: var(--muted); min-height: 36px; padding: 4px 8px; font-size: 1.3rem; line-height: 1; }
 
 /* progresso */
 .prog { display: grid; gap: 8px; }
 .barra { height: 6px; border-radius: 3px; background: var(--soft); overflow: hidden; }
-.barra i { display: block; height: 100%; width: 30%; background: var(--turquesa); border-radius: 3px; }
+.barra i { display: block; height: 100%; width: 30%; background: var(--barra); border-radius: 3px; }
 @media (prefers-reduced-motion: no-preference) { .barra i { animation: vai 1.4s ease-in-out infinite; } }
 @keyframes vai { 0% { transform: translateX(-100%); } 100% { transform: translateX(340%); } }
 .msg { font-size: .9rem; }
@@ -107,7 +139,7 @@ input, select { font: 16px var(--body); color: var(--ink); background: var(--bg)
 .farm { display: grid; grid-template-columns: minmax(0, 1fr) 6.2rem 3.8rem; gap: 6px 8px; align-items: center; padding: 8px; border-radius: 9px; border: 1px solid transparent; }
 .farm.best { background: var(--best); color: var(--best-ink); }
 .farm a.loja { color: inherit; font-weight: 700; text-decoration: none; display: flex; flex-direction: column; min-width: 0; }
-.farm a.loja span.ver { font-size: .78rem; color: var(--accent); font-weight: 700; }
+.farm a.loja span.ver { font-size: .78rem; color: var(--link); font-weight: 700; }
 .farm.best a.loja span.ver { color: var(--best-ink); text-decoration: underline; }
 .farm input { width: 100%; font-family: var(--mono); text-align: right; padding: 8px 6px; }
 .farm .info { grid-column: 1 / -1; font-size: .8rem; color: var(--muted); display: grid; gap: 4px; min-width: 0; }
@@ -141,9 +173,47 @@ input, select { font: 16px var(--body); color: var(--ink); background: var(--bg)
 .of a { color: inherit; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .of .p { font-family: var(--mono); }
 
+/* paletas */
+.marca { justify-content: space-between; }
+.marca-nome { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.paletas { display: flex; gap: 6px; flex: none; }
+.pal { width: 30px; height: 30px; min-height: 0; padding: 0; border-radius: 50%; border: 2px solid var(--line); overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 0; place-items: stretch; place-content: stretch; }
+.pal span { display: block; }
+.pal[aria-pressed="true"] { border-color: var(--ink); box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--ink); }
+.faixa { display: flex; height: 4px; margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))) -10px; }
+.faixa i { flex: 1; }
+.pal-lista { display: grid; gap: 8px; }
+.pal-op { justify-content: flex-start; gap: 12px; text-align: left; }
+.pal-op .amostra { display: flex; height: 22px; width: 92px; border-radius: 6px; overflow: hidden; flex: none; border: 1px solid var(--line); }
+.pal-op .amostra i { flex: 1; }
+.pal-op[aria-pressed="true"] { border-color: var(--accent); border-width: 2px; }
+
+/* cesta: extras */
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: var(--soft); padding: 4px; border-radius: 10px; }
+.seg button { border: none; background: none; min-height: 40px; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.fretes { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
+.fretes label { display: grid; gap: 4px; font-size: .82rem; font-weight: 700; }
+.fretes input { font-family: var(--mono); text-align: right; width: 100%; }
+.incluir { display: flex; align-items: center; gap: 6px; font-size: .85rem; color: var(--muted); }
+.incluir input { width: 20px; height: 20px; accent-color: var(--accent); }
+article.pausado .farm, article.pausado .cols { opacity: .45; }
+.salvas { display: grid; gap: 6px; }
+.salva { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border-radius: 9px; background: var(--soft); }
+.salva div { min-width: 0; }
+.salva b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.salva .row { flex-wrap: nowrap; }
+.salva button { min-height: 38px; padding: 6px 10px; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 20;
+  background: var(--ink); color: var(--bg); border-radius: 12px; padding: 10px 12px 10px 16px; display: flex; align-items: center; gap: 12px;
+  max-width: min(92vw, 520px); box-shadow: 0 8px 24px rgba(0,0,0,.25); font-size: .92rem; }
+.toast button { min-height: 36px; padding: 6px 12px; background: var(--best); color: var(--best-ink); border: none; }
+.rank-row .det { grid-column: 2 / -1; font-size: .78rem; color: var(--muted); margin-top: -4px; }
+.rank-row.first .det { color: inherit; }
+
 /* ajustes */
 .passos { margin: 0; padding-left: 1.25rem; display: grid; gap: 8px; }
-.ok { color: var(--accent); font-weight: 700; }
+.ok { color: var(--link); font-weight: 700; }
 code { font-family: var(--mono); font-size: .88em; background: var(--soft); padding: 1px 5px; border-radius: 4px; }
 </style>
 </head>
@@ -151,14 +221,18 @@ code { font-family: var(--mono); font-size: .88em; background: var(--soft); padd
 <header class="topo">
   <div class="topo-in">
     <div class="marca">
-      <svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1A535C"/><path d="M27 14h10v13h13v10H37v13H27V37H14V27h13z" fill="#4ECDC4"/></svg>
-      <h1>Cesta de Farmácias</h1>
+      <div class="marca-nome">
+        <svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" style="fill:var(--logo-bg)"/><path d="M27 14h10v13h13v10H37v13H27V37H14V27h13z" style="fill:var(--logo-fg)"/></svg>
+        <h1>Cesta de Farmácias</h1>
+      </div>
+      <div class="paletas" id="paletas" role="group" aria-label="Paleta de cores"></div>
     </div>
     <nav class="abas" aria-label="Seções">
       <a href="#cesta" id="aba-cesta">Cesta</a>
       <a href="#buscar" id="aba-buscar">Buscar</a>
       <a href="#ajustes" id="aba-ajustes">Ajustes</a>
     </nav>
+    <div class="faixa" id="faixa" aria-hidden="true"></div>
   </div>
 </header>
 
@@ -171,6 +245,16 @@ code { font-family: var(--mono); font-size: .88em; background: var(--soft); padd
       <div class="row" style="justify-content:space-between"><h2 id="t-rank">Quanto sai a cesta</h2><span class="label" id="rank-status"></span></div>
       <div class="rank" id="rank"></div>
       <div class="combo" id="combo"></div>
+      <div class="row"><button type="button" id="compartilhar" class="grow">Compartilhar resumo</button></div>
+    </div>
+    <div class="panel">
+      <h2>Como vai receber</h2>
+      <div class="seg" role="group" aria-label="Como vai receber">
+        <button type="button" id="rec-retirar">Retirar na loja</button>
+        <button type="button" id="rec-entrega">Entrega em casa</button>
+      </div>
+      <p class="nota" id="rec-nota"></p>
+      <div class="fretes" id="fretes"></div>
     </div>
     <div class="panel">
       <div class="row" style="justify-content:space-between">
@@ -180,6 +264,14 @@ code { font-family: var(--mono); font-size: .88em; background: var(--soft); padd
       <p class="nota" id="quando-cesta"></p>
     </div>
     <div class="row" style="justify-content:space-between"><h2>Produtos</h2><button id="zerar" type="button">Apagar preços</button></div>
+    <details class="panel" id="painel-salvas">
+      <summary><b>Minhas cestas</b> <span class="nota" id="n-salvas"></span></summary>
+      <div class="row">
+        <input id="nome-cesta" class="grow" placeholder="Nome (ex.: Uso mensal, Gripe)" autocomplete="off">
+        <button type="button" class="btn-main" id="salvar-cesta">Salvar a cesta atual</button>
+      </div>
+      <div class="salvas" id="salvas"></div>
+    </details>
     <div id="itens" style="display:grid;gap:14px"></div>
     <form class="panel" id="novo">
       <label class="label" for="novo-busca">Adicionar produto</label>
@@ -226,6 +318,11 @@ code { font-family: var(--mono); font-size: .88em; background: var(--soft); padd
       <p class="msg" id="msg-token" role="status"></p>
     </div>
     <div class="panel">
+      <h2>Aparência</h2>
+      <div class="pal-lista" id="pal-lista"></div>
+      <p class="nota">Também dá para trocar tocando nas bolinhas no topo. O tema claro ou escuro segue o do celular.</p>
+    </div>
+    <div class="panel">
       <h2>Repositório</h2>
       <label class="label" for="repo">Dono/nome</label>
       <input id="repo" autocomplete="off" spellcheck="false" autocapitalize="none">
@@ -233,6 +330,7 @@ code { font-family: var(--mono); font-size: .88em; background: var(--soft); padd
     </div>
   </section>
 </main>
+<div class="toast" id="toast" role="status" hidden><span id="toast-txt"></span><button type="button" id="toast-btn" hidden>Desfazer</button></div>
 
 <script>
 (function () {
@@ -245,7 +343,14 @@ code { font-family: var(--mono); font-size: .88em; background: var(--soft); padd
     { id: "ultrafarma", nome: "Ultrafarma", url: function (q) { return "https://www.ultrafarma.com.br/busca?q=" + q; } }
   ];
   var NOME_F = {}; FARM.forEach(function (f) { NOME_F[f.id] = f.nome; });
-  var K = { estado: "cesta-v2", token: "cesta-token", repo: "cesta-repo", ativo: "cesta-ultima-busca" };
+  var K = { estado: "cesta-v2", token: "cesta-token", repo: "cesta-repo", ativo: "cesta-ultima-busca", paleta: "cesta-paleta", salvas: "cesta-salvas" };
+  var PALETAS = [
+    { id: "oceanic", nome: "Oceanic Cactus", cores: ["#1A535C", "#4ECDC4", "#F7FFF7", "#FF6B6B", "#FFE66D"], topo: "#1A535C" },
+    { id: "arcoiris", nome: "Soft Rainbow", cores: ["#FBF8CC", "#FDE4CF", "#FFCFD2", "#F1C0E8", "#CFBAF0", "#A3C4F3", "#90DBF4", "#8EECF5", "#98F5E1", "#B9FBC0"], topo: "#CFBAF0" },
+    { id: "crepusculo", nome: "Golden Twilight", cores: ["#000814", "#001D3D", "#003566", "#FFC300", "#FFD60A"], topo: "#001D3D" }
+  ];
+  // Ultrafarma não tem loja em BH: na retirada, entra o frete informado para ela
+  var SEM_LOJA_BH = { ultrafarma: true };
   var REPO_PADRAO = "tiomoh/DrugstoreComparison";
   var EXEMPLO = { itens: [
     { busca: "Finasterida 1mg", modo: "unidade", alvo: 30, qtd: 1, precos: {} },
@@ -265,6 +370,8 @@ code { font-family: var(--mono); font-size: .88em; background: var(--soft); padd
       s = antigo && Array.isArray(antigo.itens) ? antigo : JSON.parse(JSON.stringify(EXEMPLO));
     }
     s.itens.forEach(function (it) { it.precos = it.precos || {}; it.alts = it.alts || {}; it.erros = it.erros || {}; });
+    s.receber = s.receber || "retirar";
+    s.fretes = s.fretes || {};
     return s;
   })();
   function salvar() { gravar(K.estado, JSON.stringify(estado)); }
@@ -343,6 +450,12 @@ code { font-family: var(--mono); font-size: .88em; background: var(--soft); padd
   }
 
   /* ---------- cálculo da cesta ---------- */
+  function ativos() { return estado.itens.filter(function (it) { return it.ativo !== false; }); }
+  function frete(f) {
+    if (!ativos().length) return 0;
+    if (estado.receber === "entrega" || SEM_LOJA_BH[f.id]) return estado.fretes[f.id] || 0;
+    return 0;
+  }
   function custo(item, p) {
     if (!p || p.preco == null) return null;
     if (item.modo === "unidade") { if (!p.un) return null; return p.preco / p.un * (item.alvo || p.un); }
@@ -355,6 +468,7 @@ code { font-family: var(--mono); font-size: .88em; background: var(--soft); padd
     box.textContent = "";
     estado.itens.forEach(function (item, i) { box.appendChild(cartao(item, i)); });
     resumo();
+    renderSalvas();
     document.getElementById("quando-cesta").textContent = estado.quando ? quando(estado.quando) : "Toque em Atualizar preços para o robô consultar as cinco farmácias.";
   }
 
@@ -380,11 +494,19 @@ code { font-family: var(--mono); font-size: .88em; background: var(--soft); padd
       extra = el("span", {}, [qtd, " cx."]);
     }
     var rem = el("button", { class: "x", type: "button", "aria-label": "Remover " + item.busca, text: "×" });
-    rem.addEventListener("click", function () { estado.itens.splice(i, 1); salvar(); renderCesta(); });
+    rem.addEventListener("click", function () {
+      var tirado = estado.itens.splice(i, 1)[0];
+      salvar(); renderCesta();
+      toast("“" + tirado.busca + "” removido.", "Desfazer", function () { estado.itens.splice(Math.min(i, estado.itens.length), 0, tirado); salvar(); renderCesta(); });
+    });
+    var inc = el("input", { type: "checkbox", id: "ativo-" + i });
+    inc.checked = item.ativo !== false;
+    inc.addEventListener("change", function () { item.ativo = inc.checked; salvar(); renderCesta(); });
+    var incluir = el("label", { class: "incluir", for: "ativo-" + i }, [inc, "incluir no total"]);
 
-    var card = el("article", { class: "panel" }, [
+    var card = el("article", { class: "panel" + (item.ativo === false ? " pausado" : "") }, [
       el("div", { class: "item-head" }, [el("h3", { text: item.busca }), rem]),
-      el("div", { class: "modo" }, [modo, extra]),
+      el("div", { class: "modo" }, [modo, extra, incluir]),
       el("div", { class: "cols label" }, [el("span", { text: "Farmácia" }), el("span", { text: "Preço" }), el("span", { text: item.modo === "unidade" ? "Unid." : "" })])
     ]);
 
@@ -434,14 +556,35 @@ code { font-family: var(--mono); font-size: .88em; background: var(--soft); padd
     return card;
   }
 
-  function resumo() {
-    var n = estado.itens.length;
-    var linhas = FARM.map(function (f) {
+  function totais() {
+    var lista = ativos(), n = lista.length;
+    return FARM.map(function (f) {
       var total = 0, falta = 0;
-      estado.itens.forEach(function (it) { var c = custo(it, it.precos[f.id]); if (c == null) falta++; else total += c; });
-      return { f: f, total: total, falta: falta };
-    });
-    linhas.sort(function (a, b) { return (a.falta - b.falta) || (a.total - b.total); });
+      lista.forEach(function (it) { var c = custo(it, it.precos[f.id]); if (c == null) falta++; else total += c; });
+      var fr = n && falta < n ? frete(f) : 0;
+      return { f: f, produtos: total, frete: fr, total: total + fr, falta: falta, n: n };
+    }).sort(function (a, b) { return (a.falta - b.falta) || (a.total - b.total); });
+  }
+
+  // Melhor combinação: testa todos os grupos de farmácias (são só 31) e soma o frete de cada uma usada
+  function melhorCombo() {
+    var lista = ativos(), melhor = null;
+    for (var m = 1; m < 32; m++) {
+      var grupo = FARM.filter(function (f, j) { return m & (1 << j); }), soma = 0, partes = [], usadas = {}, ok = lista.length > 0;
+      lista.forEach(function (it) {
+        var best = null;
+        grupo.forEach(function (f) { var c = custo(it, it.precos[f.id]); if (c != null && (!best || c < best.c)) best = { c: c, f: f }; });
+        if (!best) ok = false; else { soma += best.c; usadas[best.f.id] = best.f; partes.push(it.busca + " na " + best.f.nome); }
+      });
+      if (!ok) continue;
+      Object.keys(usadas).forEach(function (id) { soma += frete(usadas[id]); });
+      if (!melhor || soma < melhor.soma - 0.004) melhor = { ok: true, soma: soma, partes: partes };
+    }
+    return melhor || { ok: false, soma: 0, partes: [] };
+  }
+
+  function resumo() {
+    var linhas = totais(), n = ativos().length;
     var rank = document.getElementById("rank");
     rank.textContent = "";
     var completas = 0;
@@ -450,26 +593,128 @@ code { font-family: var(--mono); font-size: .88em; background: var(--soft); padd
       if (cheia) completas++;
       var nome = el("span", { class: "nome" }, [l.f.nome]);
       if (!cheia) nome.appendChild(el("span", { class: "falta", text: l.falta === n ? "sem preços" : "faltam " + l.falta }));
-      rank.appendChild(el("div", { class: "rank-row" + (k === 0 && cheia ? " first" : "") }, [
-        el("span", { class: "pos", text: cheia ? (k + 1) + "º" : "–" }), nome, el("span", { class: "total", text: l.total > 0 ? brl(l.total) : "—" })
+      var kids = [el("span", { class: "pos", text: cheia ? (k + 1) + "º" : "–" }), nome, el("span", { class: "total", text: l.total > 0 ? brl(l.total) : "—" })];
+      if (l.frete > 0) kids.push(el("span", { class: "det", text: "produtos " + brl(l.produtos) + " + frete " + brl(l.frete) }));
+      rank.appendChild(el("div", { class: "rank-row" + (k === 0 && cheia ? " first" : "") }, kids));
+    });
+    var pausados = estado.itens.length - n;
+    document.getElementById("rank-status").textContent = (n ? completas + " de 5 completas" : "nenhum item incluído") + (pausados ? " · " + pausados + " fora do total" : "");
+    var m = melhorCombo(), combo = document.getElementById("combo");
+    combo.textContent = "";
+    if (m.ok) {
+      combo.appendChild(document.createTextNode("Melhor combinação entre farmácias: "));
+      combo.appendChild(el("b", { class: "num", text: brl(m.soma) }));
+      combo.appendChild(document.createTextNode(" (" + m.partes.join("; ") + (Object.keys(estado.fretes).length || estado.receber === "entrega" ? "; já com frete" : "") + ")."));
+    } else {
+      combo.textContent = "Preencha os preços para ver a melhor combinação.";
+    }
+    renderReceber();
+  }
+
+  function renderReceber() {
+    var ret = estado.receber !== "entrega";
+    document.getElementById("rec-retirar").setAttribute("aria-pressed", String(ret));
+    document.getElementById("rec-entrega").setAttribute("aria-pressed", String(!ret));
+    document.getElementById("rec-nota").textContent = ret
+      ? "Retirada sem frete nas lojas de BH. A Ultrafarma não tem loja em BH: informe abaixo o frete que aparece no carrinho dela."
+      : "Informe o frete de cada farmácia para o seu CEP (aparece no carrinho). Deixe vazio se for grátis.";
+    var box = document.getElementById("fretes");
+    if (box.dataset.modo === estado.receber) return;  // não recria os campos enquanto você digita
+    box.dataset.modo = estado.receber;
+    box.textContent = "";
+    FARM.forEach(function (f) {
+      if (ret && !SEM_LOJA_BH[f.id]) return;
+      var inp = el("input", { id: "frete-" + f.id, inputmode: "decimal", placeholder: "R$ 0,00", value: fmtIn(estado.fretes[f.id] || null), autocomplete: "off" });
+      inp.addEventListener("change", function () { var v = numInput(inp.value); if (v == null) delete estado.fretes[f.id]; else estado.fretes[f.id] = v; inp.value = fmtIn(v); salvar(); resumo(); });
+      box.appendChild(el("label", { for: "frete-" + f.id }, ["Frete " + f.nome, inp]));
+    });
+  }
+  ["retirar", "entrega"].forEach(function (m) {
+    document.getElementById("rec-" + m).addEventListener("click", function () { estado.receber = m; salvar(); resumo(); });
+  });
+
+  /* ---------- compartilhar ---------- */
+  document.getElementById("compartilhar").addEventListener("click", function () {
+    var l = totais(), m = melhorCombo(), linhas = ["Cesta de Farmácias" + (estado.quando ? " (" + new Date(estado.quando).toLocaleDateString("pt-BR") + ")" : "")];
+    ativos().forEach(function (it) { linhas.push("• " + it.busca); });
+    linhas.push("");
+    l.forEach(function (x, k) { linhas.push((x.falta ? "–" : (k + 1) + "º") + " " + x.f.nome + ": " + (x.total > 0 ? brl(x.total) : "sem preços") + (x.falta && x.falta < x.n ? " (faltam " + x.falta + ")" : "")); });
+    if (m.ok) linhas.push("", "Melhor combinação: " + brl(m.soma) + " (" + m.partes.join("; ") + ")");
+    var texto = linhas.join("\n");
+    if (navigator.share) { navigator.share({ text: texto }).catch(function () {}); return; }
+    (navigator.clipboard ? navigator.clipboard.writeText(texto) : Promise.reject()).then(function () { toast("Resumo copiado. Cole no WhatsApp."); }, function () { toast("Não consegui copiar neste navegador."); });
+  });
+
+  /* ---------- aviso flutuante ---------- */
+  var toastTimer;
+  function toast(txt, botao, acao) {
+    var t = document.getElementById("toast"), b = document.getElementById("toast-btn");
+    document.getElementById("toast-txt").textContent = txt;
+    b.hidden = !botao; b.textContent = botao || "";
+    b.onclick = function () { t.hidden = true; if (acao) acao(); };
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.hidden = true; }, botao ? 7000 : 3500);
+  }
+
+  /* ---------- cestas salvas ---------- */
+  function lerSalvas() { return lerJSON(K.salvas) || []; }
+  function renderSalvas() {
+    var lista = lerSalvas(), box = document.getElementById("salvas");
+    document.getElementById("n-salvas").textContent = lista.length ? "(" + lista.length + ")" : "";
+    box.textContent = "";
+    if (!lista.length) { box.appendChild(el("p", { class: "nota", text: "Nenhuma cesta salva ainda. Dê um nome e toque em Salvar." })); return; }
+    lista.forEach(function (c, k) {
+      var carregar = el("button", { type: "button", text: "Carregar" });
+      carregar.addEventListener("click", function () {
+        var antes = JSON.parse(JSON.stringify(estado.itens));
+        estado.itens = JSON.parse(JSON.stringify(c.itens)); estado.quando = c.quando || null;
+        salvar(); renderCesta();
+        toast("Cesta “" + c.nome + "” carregada.", "Desfazer", function () { estado.itens = antes; salvar(); renderCesta(); });
+      });
+      var apagar = el("button", { type: "button", class: "x", "aria-label": "Apagar " + c.nome, text: "×" });
+      apagar.addEventListener("click", function () {
+        var l = lerSalvas(), tirada = l.splice(k, 1)[0];
+        gravar(K.salvas, JSON.stringify(l)); renderSalvas();
+        toast("“" + tirada.nome + "” apagada.", "Desfazer", function () { var l2 = lerSalvas(); l2.splice(k, 0, tirada); gravar(K.salvas, JSON.stringify(l2)); renderSalvas(); });
+      });
+      box.appendChild(el("div", { class: "salva" }, [
+        el("div", {}, [el("b", { text: c.nome }), el("span", { class: "nota", text: c.itens.length + " itens · " + new Date(c.salva).toLocaleDateString("pt-BR") })]),
+        el("div", { class: "row" }, [carregar, apagar])
       ]));
     });
-    document.getElementById("rank-status").textContent = n ? completas + " de 5 completas" : "cesta vazia";
-    var soma = 0, ok = n > 0, partes = [];
-    estado.itens.forEach(function (it) {
-      var best = null;
-      FARM.forEach(function (f) { var c = custo(it, it.precos[f.id]); if (c != null && (!best || c < best.c)) best = { c: c, f: f }; });
-      if (!best) ok = false; else { soma += best.c; partes.push(it.busca + " na " + best.f.nome); }
+  }
+  document.getElementById("salvar-cesta").addEventListener("click", function () {
+    var campo = document.getElementById("nome-cesta"), nome = campo.value.trim() || "Cesta de " + new Date().toLocaleDateString("pt-BR");
+    if (!estado.itens.length) { toast("A cesta está vazia."); return; }
+    var l = lerSalvas().filter(function (c) { return c.nome !== nome; });
+    l.unshift({ nome: nome, salva: Date.now(), quando: estado.quando, itens: JSON.parse(JSON.stringify(estado.itens)) });
+    gravar(K.salvas, JSON.stringify(l.slice(0, 30)));
+    campo.value = ""; renderSalvas(); toast("Cesta “" + nome + "” salva.");
+  });
+
+  /* ---------- paletas ---------- */
+  function aplicarPaleta(id) {
+    var pal = PALETAS.filter(function (p) { return p.id === id; })[0] || PALETAS[0];
+    if (pal.id === "oceanic") document.documentElement.removeAttribute("data-paleta");
+    else document.documentElement.setAttribute("data-paleta", pal.id);
+    gravar(K.paleta, pal.id === "oceanic" ? null : pal.id);
+    var meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute("content", pal.topo);
+    var faixa = document.getElementById("faixa"); faixa.textContent = "";
+    pal.cores.forEach(function (c) { faixa.appendChild(el("i", { style: "background:" + c })); });
+    var topo = document.getElementById("paletas"); topo.textContent = "";
+    var lista = document.getElementById("pal-lista"); lista.textContent = "";
+    PALETAS.forEach(function (p) {
+      var b = el("button", { type: "button", class: "pal", title: p.nome, "aria-label": "Paleta " + p.nome, "aria-pressed": String(p.id === pal.id) });
+      [p.cores[0], p.cores[Math.floor(p.cores.length / 2)], p.cores[p.cores.length - 2], p.cores[p.cores.length - 1]].forEach(function (c) { b.appendChild(el("span", { style: "background:" + c })); });
+      b.addEventListener("click", function () { aplicarPaleta(p.id); });
+      topo.appendChild(b);
+      var amostra = el("span", { class: "amostra" });
+      p.cores.forEach(function (c) { amostra.appendChild(el("i", { style: "background:" + c })); });
+      var op = el("button", { type: "button", class: "pal-op", "aria-pressed": String(p.id === pal.id) }, [amostra, p.nome]);
+      op.addEventListener("click", function () { aplicarPaleta(p.id); });
+      lista.appendChild(op);
     });
-    var combo = document.getElementById("combo");
-    combo.textContent = "";
-    if (ok) {
-      combo.appendChild(document.createTextNode("Comprando cada item onde é mais barato: "));
-      combo.appendChild(el("b", { class: "num", text: brl(soma) }));
-      combo.appendChild(document.createTextNode(" (" + partes.join("; ") + "). Frete não incluído."));
-    } else {
-      combo.textContent = "Os totais comparam só o preço dos produtos. Frete e retirada variam por CEP.";
-    }
   }
 
   function aplicarCesta(res) {
@@ -710,6 +955,7 @@ code { font-family: var(--mono); font-size: .88em; background: var(--soft); padd
     avisoChave();
   }
   window.addEventListener("hashchange", rota);
+  aplicarPaleta(ler(K.paleta) || "oceanic");
   if (ultima) document.getElementById("termo").value = ultima.termo || "";
   rota();
 })();
