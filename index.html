@@ -604,7 +604,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       orfaos.forEach(function (a) {
         var tira = el("button", { type: "button", class: "x", "aria-label": "Remover alerta de " + a.busca, text: "×" });
         tira.addEventListener("click", function () { mudarAlertas(function () { estado.alertas = estado.alertas.filter(function (x) { return x !== a; }); }); });
-        pn.appendChild(el("div", { class: "row", style: "justify-content:space-between" }, [el("span", { text: "🔔 " + a.busca + " · até " + brl(a.limite) + (a.ativo && diasRestantes(a) >= 0 ? "" : " · desligado") }), tira]));
+        pn.appendChild(el("div", { class: "row", style: "justify-content:space-between" }, [el("span", { text: "🔔 " + a.busca + " · até " + limiteTxt(a) + (a.ativo && diasRestantes(a) >= 0 ? "" : " · desligado") }), tira]));
       });
       box.appendChild(pn);
     }
@@ -1030,19 +1030,34 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       })
       .then(function () { renderCesta(); if (alertaDeNovo) { alertaDeNovo = false; enviarAlertas(); } });
   }
+  function limiteTxt(a) { return brl(a.limite) + (a.base === "unidade" ? " por comprimido" : ""); }
   var alertaForm = null;  // formulário de alerta aberto (sobrevive ao redesenho)
   function boxAlerta(item) {
     var a = alertaDe(item), box = el("div", { class: "alerta" });
     var atual = null; FARM.forEach(function (f) { var c = custo(item, item.precos[f.id]); if (c != null && (atual == null || c < atual)) atual = c; });
+    var atualUn = null; FARM.forEach(function (f) { var pu = porUnidade(item.precos[f.id]); if (pu != null && (atualUn == null || pu < atualUn)) atualUn = pu; });
     if (!a) {
       var abrir = el("button", { type: "button", class: "btn-alerta", text: "🔔 Criar alerta de preço" });
       var idA = idAlerta(item.busca);
       function formulario() {
         box.textContent = ""; box.classList.add("editando");
-        if (!alertaForm || alertaForm.id !== idA) alertaForm = { id: idA, lim: atual ? fmtIn(Math.floor(atual * 0.9 * 100) / 100) : "", dias: "30" };
+        if (!alertaForm || alertaForm.id !== idA) alertaForm = { id: idA, base: atualUn != null || item.modo === "unidade" ? "unidade" : "linha", dias: "30" };
+        function sugestao(b) { var v = b === "unidade" ? atualUn : atual; return v ? fmtIn(Math.floor(v * 0.9 * 100) / 100) : ""; }
+        if (alertaForm.lim == null) alertaForm.lim = sugestao(alertaForm.base);
+        var base = el("select", { id: "abase-" + idA, "aria-label": "Tipo de limite" });
+        [["unidade", "por comprimido (qualquer caixa)"], ["linha", "pelo total desta linha"]].forEach(function (o) {
+          var op = el("option", { value: o[0], text: o[1] }); if (alertaForm.base === o[0]) op.selected = true; base.appendChild(op);
+        });
         var lim = el("input", { id: "alim-" + idA, inputmode: "decimal", value: alertaForm.lim, placeholder: "R$", "aria-label": "Avisar quando custar até" });
         var dias = el("input", { id: "adias-" + idA, type: "number", inputmode: "numeric", min: "1", max: "365", value: alertaForm.dias, "aria-label": "Por quantos dias" });
         lim.addEventListener("input", function () { alertaForm.lim = lim.value; });
+        base.addEventListener("change", function () { alertaForm.base = base.value; alertaForm.lim = sugestao(base.value); lim.value = alertaForm.lim; explica.textContent = textoBase(); });
+        function textoBase() {
+          return alertaForm.base === "unidade"
+            ? "Aviso por notificação do GitHub quando o preço por comprimido (ou cápsula), em qualquer tamanho de caixa e em qualquer das farmácias, ficar igual ou abaixo de:"
+            : "Aviso por notificação do GitHub quando o custo desta linha, na quantidade escolhida, ficar igual ou abaixo de:";
+        }
+        var explica = el("p", { class: "nota", text: textoBase() });
         dias.addEventListener("input", function () { alertaForm.dias = dias.value; });
         var ok = el("button", { type: "button", class: "btn-main", text: "Ligar alerta" });
         var cancela = el("button", { type: "button", text: "Cancelar" });
@@ -1053,10 +1068,11 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
           alertaForm = null;
           mudarAlertas(function () {
             estado.alertas = estado.alertas.filter(function (x) { return x.id !== idAlerta(item.busca); });
-            estado.alertas.push({ id: idAlerta(item.busca), busca: item.busca, modo: item.modo, alvo: item.alvo, qtd: item.qtd || 1, eans: item.eans || [], limite: v, expira: hojeISO(n), ativo: true });
+            estado.alertas.push({ id: idAlerta(item.busca), busca: item.busca, modo: item.modo, alvo: item.alvo, qtd: item.qtd || 1, eans: item.eans || [], limite: v, base: base.value, expira: hojeISO(n), ativo: true });
           });
         });
-        box.appendChild(el("p", { class: "nota", text: "Aviso por notificação do GitHub (no app e por e-mail) quando o custo desta linha, na quantidade escolhida, ficar igual ou abaixo de:" }));
+        box.appendChild(el("div", { class: "row" }, [el("label", { class: "campo" }, ["Limite", base])]));
+        box.appendChild(explica);
         box.appendChild(el("div", { class: "row" }, [el("label", { class: "campo" }, ["Até R$", lim]), el("label", { class: "campo" }, ["por", dias, "dias"])]));
         box.appendChild(el("div", { class: "row" }, [ok, cancela]));
       }
@@ -1080,9 +1096,10 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     tira.addEventListener("click", function () { mudarAlertas(function () { estado.alertas = estado.alertas.filter(function (x) { return x !== a; }); }); });
     box.className = "alerta" + (vigente ? " on" : "");
     box.appendChild(el("div", { class: "row", style: "justify-content:space-between" }, [
-      el("label", { class: "incluir" }, [chave, "🔔 Alerta até " + brl(a.limite) + " · " + estadoTxt]), el("div", { class: "row" }, [mais, tira])
+      el("label", { class: "incluir" }, [chave, "🔔 Alerta até " + limiteTxt(a) + " · " + estadoTxt]), el("div", { class: "row" }, [mais, tira])
     ]));
-    if (a.ultimo) box.appendChild(el("p", { class: "nota", text: "Robô conferiu em " + a.ultimo.d.split("-").reverse().slice(0, 2).join("/") + ": " + brl(a.ultimo.custo) + " na " + (NOME_F[a.ultimo.farmacia] || a.ultimo.farmacia) + (a.ultimo.custo <= a.limite ? " — dentro do limite, você foi avisado." : ".") }));
+    if (a.ultimo) box.appendChild(el("p", { class: "nota", text: "Robô conferiu em " + a.ultimo.d.split("-").reverse().slice(0, 2).join("/") + ": " + brl(a.ultimo.custo) +
+      (a.base === "unidade" ? " por comprimido" + (a.ultimo.unidades ? " (caixa de " + a.ultimo.unidades + " por " + brl(a.ultimo.preco) + ")" : "") : "") + " na " + (NOME_F[a.ultimo.farmacia] || a.ultimo.farmacia) + (a.ultimo.custo <= a.limite ? " — dentro do limite, você foi avisado." : ".") }));
     if (alertaEnviando) box.appendChild(el("p", { class: "nota alerta-msg", text: alertaMsg }));
     return box;
   }
