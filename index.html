@@ -144,10 +144,11 @@ details[open] > summary::after { content: "▴"; }
 .item-head h3 { overflow-wrap: anywhere; }
 .modo { font-size: .8rem; color: rgba(var(--escura-rgb), .75); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-weight: 600; }
 .modo select, .modo input { padding: 5px 8px; font-size: 15px; }
-.qtd { display: inline-flex; align-items: center; gap: 6px; }
+.qtd { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; max-width: 100%; min-width: 0; }
 .stepper { display: inline-flex; align-items: center; background: var(--fundo); border: 1px solid rgba(var(--escura-rgb), .2); border-radius: 12px; padding: 2px; }
 .stepper .passo { min-height: 34px; min-width: 34px; padding: 0; border: none; background: none; font-size: 1.1rem; border-radius: 9px; }
 .stepper .passo:hover { background: #ffffff; }
+.qtd .alvo { width: 3.8rem; text-align: center; padding: 5px 4px; }
 .stepper input { width: 3.2rem; text-align: center; border: none; background: transparent; padding: 4px 0; font-weight: 800; -moz-appearance: textfield; }
 .stepper input::-webkit-inner-spin-button, .stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 .farm { display: grid; grid-template-columns: minmax(0, 1fr) 6.2rem 3.8rem; gap: 6px 8px; align-items: center; padding: 9px 10px; border-radius: 12px;
@@ -169,6 +170,26 @@ details[open] > summary::after { content: "▴"; }
 .incluir { display: flex; align-items: center; gap: 6px; font-size: .78rem; color: rgba(var(--escura-rgb), .75); font-weight: 600; }
 .incluir input { width: 18px; height: 18px; accent-color: var(--escura); }
 article.pausado .farm, article.pausado .cols { opacity: .45; }
+
+.generico, .hist, .alerta { display: grid; gap: 6px; padding: 10px 12px; border-radius: 12px; }
+.generico { background: rgba(var(--acento-rgb), .14); border: 1px dashed var(--acento); }
+.generico button { justify-self: start; min-height: 38px; }
+.hist { background: var(--fundo); border: 1px solid rgba(var(--escura-rgb), .1); }
+.spark { width: 100%; height: 70px; display: block; }
+.spark-area { fill: rgba(var(--acento-rgb), .25); stroke: none; }
+.spark-linha { fill: none; stroke: var(--escura); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.spark-fim { fill: var(--acento); stroke: var(--escura); stroke-width: 2; }
+.alerta { padding: 0; }
+.alerta.on { padding: 8px 10px; background: rgba(var(--escura-rgb), .05); border: 1px solid rgba(var(--escura-rgb), .15); }
+.alerta .row button { min-height: 36px; padding: 6px 12px; }
+.btn-alerta { justify-self: start; min-height: 38px; }
+.campo { display: inline-flex; align-items: center; gap: 6px; font-size: .82rem; font-weight: 700; color: var(--escura); }
+.campo input { width: 6rem; text-align: right; font-family: var(--mono); }
+.campo input[type="number"] { width: 4.2rem; }
+
+.scanner { position: relative; display: grid; gap: 8px; }
+.scanner video { width: 100%; max-height: 52vh; object-fit: cover; border-radius: 12px; background: #000; }
+.scanner .mira { position: absolute; left: 12%; right: 12%; top: 32%; height: 22%; border: 3px solid var(--acento); border-radius: 10px; box-shadow: 0 0 0 999px rgba(0,0,0,.25); pointer-events: none; }
 
 /* busca por princípio ativo */
 .facetas { display: grid; gap: 10px; }
@@ -201,6 +222,9 @@ article.pausado .farm, article.pausado .cols { opacity: .45; }
 .fretes { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
 .fretes label { display: grid; gap: 4px; font-size: .76rem; font-weight: 800; color: var(--escura); background: var(--fundo); padding: 8px; border-radius: 10px; border: 1px solid rgba(var(--escura-rgb), .12); }
 .fretes input { font-family: var(--mono); text-align: right; width: 100%; }
+.frete-auto { grid-column: 1 / -1; display: grid; gap: 2px; font-size: .8rem; padding: 8px 10px; border-radius: 10px; background: var(--fundo); border: 1px solid rgba(var(--escura-rgb), .12); }
+.frete-auto b { color: var(--escura); }
+#cep { width: 7.2rem; text-align: center; font-family: var(--mono); }
 .salvas { display: grid; gap: 6px; }
 .salva { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border-radius: 12px; background: var(--fundo); border: 1px solid rgba(var(--escura-rgb), .12); }
 .salva div { min-width: 0; }
@@ -231,7 +255,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     <div class="marca">
       <div class="marca-nome">
         <span class="logo" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M24 6h16v18h18v16H40v18H24V40H6V24h18z" style="fill:var(--sobre-acento)"/></svg></span>
-        <div><h1>Cesta de Farmácias</h1><span class="marca-sub">Araújo · Raia · Pacheco · Drogasil · Ultrafarma</span></div>
+        <div><h1>Cesta de Farmácias</h1><span class="marca-sub">7 farmácias · preços, genéricos e alertas</span></div>
       </div>
     </div>
     <div class="paletas" id="paletas" role="group" aria-label="Paleta de cores"></div>
@@ -269,7 +293,10 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       <div class="row"><button type="button" id="compartilhar" class="grow">Compartilhar resumo</button></div>
     </div>
     <div class="panel">
-      <h2>Como vai receber</h2>
+      <div class="row" style="justify-content:space-between">
+        <h2>Como vai receber</h2>
+        <label class="campo" for="cep">CEP <input id="cep" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="00000-000"></label>
+      </div>
       <div class="seg" role="group" aria-label="Como vai receber">
         <button type="button" id="rec-retirar">Retirar na loja</button>
         <button type="button" id="rec-entrega">Entrega em casa</button>
@@ -316,8 +343,23 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
         <input id="termo" class="grow" placeholder="ex.: pseudoefedrina" autocomplete="off" autocapitalize="none">
         <button class="btn-main" type="submit" id="btn-ativo">Buscar</button>
       </div>
-      <p class="nota">Consulta a tabela oficial da Anvisa (CMED) e as cinco farmácias. Leva cerca de meio minuto.</p>
+      <p class="nota">Consulta a tabela oficial da Anvisa (CMED) e as sete farmácias. Leva cerca de meio minuto.</p>
       <div class="prog" id="prog-ativo" hidden><div class="barra"><i></i></div><p class="msg" id="msg-ativo" role="status"></p></div>
+    </form>
+    <form class="panel" id="form-ean">
+      <label class="label" for="ean">Pelo código de barras da caixa</label>
+      <div class="row">
+        <button type="button" class="btn-main" id="ler-codigo">📷 Ler com a câmera</button>
+        <input id="ean" class="grow" inputmode="numeric" placeholder="ou digite: 789…" autocomplete="off">
+        <button type="submit" id="btn-ean">Buscar</button>
+      </div>
+      <div class="scanner" id="scanner" hidden>
+        <video id="video" playsinline muted></video>
+        <div class="mira" aria-hidden="true"></div>
+        <p class="nota" id="msg-scanner">Aponte para o código de barras da caixa.</p>
+        <button type="button" id="parar-codigo">Cancelar</button>
+      </div>
+      <div class="prog" id="prog-ean" hidden><div class="barra"><i></i></div><p class="msg" id="msg-ean" role="status"></p></div>
     </form>
     <div id="res-ativo" style="display:grid;gap:14px"></div>
   </section>
@@ -361,10 +403,12 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     { id: "raia", nome: "Droga Raia", url: function (q) { return "https://www.drogaraia.com.br/search?w=" + q; } },
     { id: "pacheco", nome: "Pacheco", url: function (q) { return "https://www.drogariaspacheco.com.br/busca?q=" + q; } },
     { id: "drogasil", nome: "Drogasil", url: function (q) { return "https://www.drogasil.com.br/search?w=" + q; } },
-    { id: "ultrafarma", nome: "Ultrafarma", url: function (q) { return "https://www.ultrafarma.com.br/busca?q=" + q; } }
+    { id: "ultrafarma", nome: "Ultrafarma", url: function (q) { return "https://www.ultrafarma.com.br/busca?q=" + q; } },
+    { id: "saopaulo", nome: "Drogaria São Paulo", url: function (q) { return "https://www.drogariasaopaulo.com.br/busca?q=" + q; } },
+    { id: "paguemenos", nome: "Pague Menos", url: function (q) { return "https://www.paguemenos.com.br/" + q + "?_q=" + q + "&map=ft"; } }
   ];
   var NOME_F = {}; FARM.forEach(function (f) { NOME_F[f.id] = f.nome; });
-  var K = { estado: "cesta-v2", token: "cesta-token", repo: "cesta-repo", ativo: "cesta-ultima-busca", paleta: "cesta-paleta", salvas: "cesta-salvas" };
+  var K = { estado: "cesta-v2", token: "cesta-token", repo: "cesta-repo", ativo: "cesta-ultima-busca", paleta: "cesta-paleta", salvas: "cesta-salvas", hist: "cesta-historico" };
   var PALETAS = [
     { id: "oceanic", nome: "Oceanic Cactus", cores: ["#1A535C", "#4ECDC4", "#F7FFF7", "#FF6B6B", "#FFE66D"], topo: "#1A535C" },
     { id: "arcoiris", nome: "Soft Rainbow", cores: ["#FBF8CC", "#FDE4CF", "#FFCFD2", "#F1C0E8", "#CFBAF0", "#A3C4F3", "#90DBF4", "#8EECF5", "#98F5E1", "#B9FBC0"], topo: "#4A3E6D" },
@@ -392,6 +436,9 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     }
     s.itens.forEach(function (it) { it.precos = it.precos || {}; it.alts = it.alts || {}; it.erros = it.erros || {}; });
     s.receber = s.receber || "retirar";
+    s.cep = s.cep || "30350120";
+    s.fretesAuto = s.fretesAuto || {};
+    s.alertas = s.alertas || [];
     s.fretes = s.fretes || {};
     return s;
   })();
@@ -472,14 +519,19 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
 
   /* ---------- cálculo da cesta ---------- */
   function ativos() { return estado.itens.filter(function (it) { return it.ativo !== false; }); }
+  // Frete: o que você digitou vale mais; senão, o que o robô simulou no carrinho para o seu CEP
   function frete(f) {
     if (!ativos().length) return 0;
-    if (estado.receber === "entrega" || SEM_LOJA_BH[f.id]) return estado.fretes[f.id] || 0;
+    var auto = estado.fretesAuto[f.id] || {}, manual = estado.fretes[f.id];
+    if (estado.receber === "entrega") return manual != null ? manual : auto.entrega ? auto.entrega.preco : 0;
+    if (SEM_LOJA_BH[f.id]) return manual != null ? manual : auto.entrega ? auto.entrega.preco : 0;
+    if (auto.entrega && !auto.retirada && !auto.erro) return auto.entrega.preco;  // sem loja para retirar perto do CEP
     return 0;
   }
+  function fmtCep(c) { c = String(c || "").replace(/\D/g, ""); return c.length > 5 ? c.slice(0, 5) + "-" + c.slice(5, 8) : c; }
   function custo(item, p) {
     if (!p || p.preco == null) return null;
-    if (item.modo === "unidade") { if (!p.un) return null; return p.preco / p.un * (item.alvo || p.un); }
+    if (item.modo === "unidade") { if (!p.un) return null; return p.preco / p.un * (item.alvo || p.un) * (item.qtd || 1); }
     return p.preco * (item.qtd || 1);
   }
 
@@ -490,7 +542,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     estado.itens.forEach(function (item, i) { box.appendChild(cartao(item, i)); });
     resumo();
     renderSalvas();
-    document.getElementById("quando-cesta").textContent = estado.quando ? quando(estado.quando) : "Toque em Atualizar preços para o robô consultar as cinco farmácias.";
+    document.getElementById("quando-cesta").textContent = estado.quando ? quando(estado.quando) : "Toque em Atualizar preços para o robô consultar as sete farmácias.";
   }
 
   function cartao(item, i) {
@@ -504,16 +556,24 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       var op = el("option", { value: o[0], text: o[1] }); if (item.modo === o[0]) op.selected = true; modo.appendChild(op);
     });
     modo.addEventListener("change", function () { item.modo = modo.value; salvar(); renderCesta(); });
-    // Quantidade: caixas (menor preço da caixa) ou comprimidos/unidades (melhor R$ por unidade)
-    var porUn = item.modo === "unidade", campo = porUn ? "alvo" : "qtd", padrao = porUn ? 30 : 1;
-    var qtd = el("input", { id: "qtd-" + i, type: "number", inputmode: "numeric", min: "1", value: item[campo] || padrao, "aria-label": porUn ? "Unidades necessárias" : "Quantidade de caixas" });
-    function mudaQtd(v) { item[campo] = Math.max(1, Math.min(999, v || padrao)); salvar(); renderCesta(); }
+    // Quantidade = quantas caixas (ou quantos "pacotes" de N comprimidos, no modo por unidade) entram na cesta
+    var porUn = item.modo === "unidade";
+    var qtd = el("input", { id: "qtd-" + i, type: "number", inputmode: "numeric", min: "1", value: item.qtd || 1, "aria-label": "Quantidade" });
+    function mudaQtd(v) { item.qtd = Math.max(1, Math.min(99, v || 1)); salvar(); renderCesta(); }
     qtd.addEventListener("change", function () { mudaQtd(parseInt(qtd.value, 10)); });
     var menos = el("button", { type: "button", class: "passo", "aria-label": "Diminuir quantidade", text: "−" });
     var mais = el("button", { type: "button", class: "passo", "aria-label": "Aumentar quantidade", text: "+" });
-    menos.addEventListener("click", function () { mudaQtd((item[campo] || padrao) - 1); });
-    mais.addEventListener("click", function () { mudaQtd((item[campo] || padrao) + 1); });
-    var extra = el("span", { class: "qtd" }, [el("span", { text: "Quantidade" }), el("span", { class: "stepper" }, [menos, qtd, mais]), el("span", { text: porUn ? "unidades" : ((item.qtd || 1) > 1 ? "caixas" : "caixa") })]);
+    menos.addEventListener("click", function () { mudaQtd((item.qtd || 1) - 1); });
+    mais.addEventListener("click", function () { mudaQtd((item.qtd || 1) + 1); });
+    var depois;
+    if (porUn) {
+      var alvo = el("input", { id: "alvo-" + i, type: "number", inputmode: "numeric", min: "1", class: "alvo", value: item.alvo || 30, "aria-label": "Comprimidos por pacote" });
+      alvo.addEventListener("change", function () { item.alvo = Math.max(1, Math.min(999, parseInt(alvo.value, 10) || 30)); salvar(); renderCesta(); });
+      depois = el("span", { class: "qtd" }, ["×", alvo, "comprimidos"]);
+    } else {
+      depois = el("span", { text: (item.qtd || 1) > 1 ? "caixas" : "caixa" });
+    }
+    var extra = el("span", { class: "qtd" }, [el("span", { text: "Quantidade" }), el("span", { class: "stepper" }, [menos, qtd, mais]), depois]);
     var rem = el("button", { class: "x", type: "button", "aria-label": "Remover " + item.busca, text: "×" });
     rem.addEventListener("click", function () {
       var tirado = estado.itens.splice(i, 1)[0];
@@ -567,13 +627,17 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
         info.appendChild(el("div", { class: "lin" }, [el("span", { text: p.nome })]));
       }
       var c = custos[j], extraTxt = "";
-      if (item.modo === "unidade" && p.preco != null) extraTxt = p.un ? brl(p.preco / p.un) + "/un · " + (item.alvo || 30) + " un = " + brl(c) : "informe as unidades da caixa";
+      if (item.modo === "unidade" && p.preco != null) extraTxt = p.un ? brl(p.preco / p.un) + "/un · " + ((item.qtd || 1) > 1 ? item.qtd + " × " : "") + (item.alvo || 30) + " un = " + brl(c) : "informe as unidades da caixa";
       else if (item.modo === "caixa" && (item.qtd || 1) > 1 && c != null) extraTxt = item.qtd + " cx = " + brl(c);
       if (extraTxt) info.appendChild(el("div", { class: "lin" }, [el("span", { text: "" }), el("span", { class: "num", text: extraTxt })]));
       if (info.childNodes.length) linha.appendChild(info);
       if (item.erros && item.erros[f.id] && p.preco == null) linha.appendChild(el("p", { class: "erro-f", text: "Não consegui consultar agora. Toque no nome para conferir no site." }));
       card.appendChild(linha);
     });
+    if (item.generico) card.appendChild(boxGenerico(item));
+    var hist = boxHistorico(item);
+    if (hist) card.appendChild(hist);
+    card.appendChild(boxAlerta(item));
     return card;
   }
 
@@ -587,10 +651,10 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     }).sort(function (a, b) { return (a.falta - b.falta) || (a.total - b.total); });
   }
 
-  // Melhor combinação: testa todos os grupos de farmácias (são só 31) e soma o frete de cada uma usada
+  // Melhor combinação: testa todos os grupos de farmácias (127 com 7 farmácias) e soma o frete de cada uma usada
   function melhorCombo() {
     var lista = ativos(), melhor = null;
-    for (var m = 1; m < 32; m++) {
+    for (var m = 1; m < (1 << FARM.length); m++) {
       var grupo = FARM.filter(function (f, j) { return m & (1 << j); }), soma = 0, partes = [], usadas = {}, ok = lista.length > 0;
       lista.forEach(function (it) {
         var best = null;
@@ -620,7 +684,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       rank.appendChild(el("div", { class: "rank-row" + (k === 0 && cheia ? " first" : "") }, kids));
     });
     var pausados = estado.itens.length - n;
-    document.getElementById("rank-status").textContent = (n ? completas + " de 5 completas" : "nenhum item incluído") + (pausados ? " · " + pausados + " fora do total" : "");
+    document.getElementById("rank-status").textContent = (n ? completas + " de " + FARM.length + " completas" : "nenhum item incluído") + (pausados ? " · " + pausados + " fora do total" : "");
     var m = melhorCombo(), combo = document.getElementById("combo");
     combo.textContent = "";
     if (m.ok) {
@@ -637,20 +701,39 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     var ret = estado.receber !== "entrega";
     document.getElementById("rec-retirar").setAttribute("aria-pressed", String(ret));
     document.getElementById("rec-entrega").setAttribute("aria-pressed", String(!ret));
-    document.getElementById("rec-nota").textContent = ret
-      ? "Retirada sem frete nas lojas de BH. A Ultrafarma não tem loja em BH: informe abaixo o frete que aparece no carrinho dela."
-      : "Informe o frete de cada farmácia para o seu CEP (aparece no carrinho). Deixe vazio se for grátis.";
+    var cepCampo = document.getElementById("cep");
+    if (document.activeElement !== cepCampo) cepCampo.value = fmtCep(estado.cep);
+    var temAuto = Object.keys(estado.fretesAuto).length > 0;
+    document.getElementById("rec-nota").textContent = (ret
+      ? "Retirada sem frete onde há loja perto do CEP. A Ultrafarma não tem loja em BH."
+      : "Entrega no CEP informado.") + (temAuto ? " Pacheco, Araújo, Drogaria São Paulo e Pague Menos: frete e lojas calculados pelo robô no carrinho." : " Toque em Atualizar preços para o robô calcular o frete.") +
+      " Drogasil, Raia e Ultrafarma não informam frete fora do site: digite o valor se quiser incluir.";
     var box = document.getElementById("fretes");
-    if (box.dataset.modo === estado.receber) return;  // não recria os campos enquanto você digita
-    box.dataset.modo = estado.receber;
+    var chave = estado.receber + "|" + JSON.stringify(estado.fretesAuto);
+    if (box.dataset.chave === chave) return;  // não recria os campos enquanto você digita
+    box.dataset.chave = chave;
     box.textContent = "";
     FARM.forEach(function (f) {
+      var auto = estado.fretesAuto[f.id];
+      if (auto && !auto.erro) {
+        var linhas = [];
+        if (auto.retirada) linhas.push("Retira em " + auto.retirada.prazo + " · " + auto.retirada.loja + (auto.retirada.lojas > 1 ? " (+" + (auto.retirada.lojas - 1) + " lojas)" : ""));
+        if (auto.entrega) linhas.push("Entrega " + (auto.entrega.preco ? brl(auto.entrega.preco) : "grátis") + " · " + auto.entrega.prazo);
+        if (auto.rapida) linhas.push("Rápida " + brl(auto.rapida.preco) + " · " + auto.rapida.prazo);
+        box.appendChild(el("div", { class: "frete-auto" }, [el("b", { text: f.nome }), el("span", { class: "nota", text: linhas.join(" · ") || "sem opções para este CEP" })]));
+        return;
+      }
       if (ret && !SEM_LOJA_BH[f.id]) return;
-      var inp = el("input", { id: "frete-" + f.id, inputmode: "decimal", placeholder: "R$ 0,00", value: fmtIn(estado.fretes[f.id] || null), autocomplete: "off" });
-      inp.addEventListener("change", function () { var v = numInput(inp.value); if (v == null) delete estado.fretes[f.id]; else estado.fretes[f.id] = v; inp.value = fmtIn(v); salvar(); resumo(); });
+      var inp = el("input", { id: "frete-" + f.id, inputmode: "decimal", placeholder: "R$ 0,00", value: fmtIn(estado.fretes[f.id] != null ? estado.fretes[f.id] : null), autocomplete: "off" });
+      inp.addEventListener("change", function () { var v = numInput(inp.value); if (v == null && inp.value.trim() !== "0") delete estado.fretes[f.id]; else estado.fretes[f.id] = v || 0; salvar(); resumo(); });
       box.appendChild(el("label", { for: "frete-" + f.id }, ["Frete " + f.nome, inp]));
     });
   }
+  document.getElementById("cep").addEventListener("change", function () {
+    var c = this.value.replace(/\D/g, "");
+    if (c.length !== 8) { toast("CEP precisa de 8 números."); this.value = fmtCep(estado.cep); return; }
+    if (c !== estado.cep) { estado.cep = c; estado.fretesAuto = {}; salvar(); resumo(); toast("CEP alterado. Toque em Atualizar preços para recalcular o frete."); }
+  });
   ["retirar", "entrega"].forEach(function (m) {
     document.getElementById("rec-" + m).addEventListener("click", function () { estado.receber = m; salvar(); resumo(); });
   });
@@ -741,6 +824,140 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     });
   }
 
+  /* ---------- genérico equivalente ---------- */
+  function porUnidade(o) { return o && o.preco != null && (o.un || o.unidades) ? o.preco / (o.un || o.unidades) : null; }
+  function boxGenerico(item) {
+    var g = item.generico, lista = Object.keys(g.ofertas).map(function (f) { return { f: f, o: g.ofertas[f], pu: porUnidade(g.ofertas[f]) }; })
+      .filter(function (x) { return x.pu != null; }).sort(function (a, b) { return a.pu - b.pu; });
+    if (!lista.length) return el("span");
+    var melhor = lista[0], atual = null;
+    FARM.forEach(function (f) { var pu = porUnidade(item.precos[f.id]); if (pu != null && (atual == null || pu < atual)) atual = pu; });
+    var comp = composicao({ subs: g.subs, doses: g.doses, dose_de: g.dose_de });
+    var econ = atual ? Math.round((1 - melhor.pu / atual) * 100) : null;
+    var add = el("button", { type: "button", text: "Adicionar o genérico à cesta" });
+    add.addEventListener("click", function () {
+      var novo = { busca: g.termo + " genérico", modo: "unidade", alvo: item.alvo || melhor.o.unidades || 10, qtd: 1, precos: {}, alts: {}, erros: {} };
+      Object.keys(g.ofertas).forEach(function (f) { var o = g.ofertas[f]; novo.precos[f] = { preco: o.preco, un: o.unidades, nome: o.nome, link: o.link }; });
+      estado.itens.push(novo); salvar(); renderCesta(); toast("Genérico adicionado à cesta.");
+    });
+    return el("div", { class: "generico" }, [
+      el("span", { class: "label", text: "Genérico equivalente" }),
+      el("p", {}, [el("b", { text: comp }), " · " + cap(g.forma)]),
+      el("p", { class: "nota" }, ["A partir de ", el("b", { class: "num", text: brl(melhor.pu) + "/un" }), " na " + NOME_F[melhor.f] + " (" + brl(melhor.o.preco) + (melhor.o.unidades ? ", " + melhor.o.unidades + " un" : "") + ")" + (econ > 0 ? " · " + econ + "% mais barato que a melhor opção acima" : econ != null ? " · não sai mais barato aqui" : "")]),
+      add
+    ]);
+  }
+
+  /* ---------- histórico ---------- */
+  var HIST = lerJSON(K.hist) || {};
+  function chaveHist(busca) { return semAcento(busca).split(/\s+/).filter(Boolean).join(" "); }
+  function boxHistorico(item) {
+    var serie = HIST[chaveHist(item.busca)];
+    if (!serie || !serie.length) return null;
+    var pts = serie.map(function (e) {
+      var m = null;
+      Object.keys(e.p).forEach(function (f) { var c = custo(item, { preco: e.p[f][0], un: e.p[f][1] }); if (c != null && (m == null || c < m.c)) m = { c: c, f: f }; });
+      return m ? { d: e.d, c: m.c, f: m.f } : null;
+    }).filter(Boolean);
+    if (!pts.length) return null;
+    var minimo = pts.reduce(function (a, b) { return b.c < a.c ? b : a; }), ult = pts[pts.length - 1];
+    var dia = function (d) { return d.slice(8, 10) + "/" + d.slice(5, 7); };
+    var texto = pts.length === 1 ? "O histórico começou em " + dia(ult.d) + ". A cada atualização, um ponto novo." :
+      "Hoje " + brl(ult.c) + " · menor do período " + brl(minimo.c) + " (" + dia(minimo.d) + ", " + NOME_F[minimo.f] + ")" + (ult.c <= minimo.c + 0.005 ? " · está no menor preço registrado" : "");
+    var box = el("div", { class: "hist" }, [el("span", { class: "label", text: "Histórico do menor preço · " + pts.length + (pts.length === 1 ? " dia" : " dias") }), el("p", { class: "nota", text: texto })]);
+    if (pts.length > 1) box.appendChild(grafico(pts));
+    return box;
+  }
+  function grafico(pts) {
+    var NS = "http://www.w3.org/2000/svg", W = 320, H = 70, P = 6;
+    var cs = pts.map(function (p) { return p.c; }), lo = Math.min.apply(null, cs), hi = Math.max.apply(null, cs), amp = hi - lo || 1;
+    var t0 = Date.parse(pts[0].d), t1 = Date.parse(pts[pts.length - 1].d), dt = t1 - t0 || 1;
+    var xy = pts.map(function (p) { return [P + (Date.parse(p.d) - t0) / dt * (W - 2 * P), P + (1 - (p.c - lo) / amp) * (H - 2 * P)]; });
+    var svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H); svg.setAttribute("class", "spark"); svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", "Menor preço por dia, de " + brl(lo) + " a " + brl(hi));
+    var area = document.createElementNS(NS, "path");
+    area.setAttribute("d", "M" + xy.map(function (q) { return q.join(","); }).join(" L") + " L" + xy[xy.length - 1][0] + "," + (H - P) + " L" + xy[0][0] + "," + (H - P) + " Z");
+    area.setAttribute("class", "spark-area"); svg.appendChild(area);
+    var linha = document.createElementNS(NS, "polyline");
+    linha.setAttribute("points", xy.map(function (q) { return q.join(","); }).join(" ")); linha.setAttribute("class", "spark-linha"); svg.appendChild(linha);
+    var fim = document.createElementNS(NS, "circle");
+    fim.setAttribute("cx", xy[xy.length - 1][0]); fim.setAttribute("cy", xy[xy.length - 1][1]); fim.setAttribute("r", 4); fim.setAttribute("class", "spark-fim"); svg.appendChild(fim);
+    return svg;
+  }
+  function carregarDados() {
+    if (!token()) return;
+    api("/contents/historico.json?ref=dados&t=" + Date.now(), { accept: "application/vnd.github.raw+json" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (h) { if (h) { HIST = h; gravar(K.hist, JSON.stringify(h)); if (!document.getElementById("v-cesta").hidden) renderCesta(); } })
+      .catch(function () {});
+    api("/contents/alertas.json?ref=dados&t=" + Date.now(), { accept: "application/vnd.github.raw+json" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (l) { if (l && !alertaEnviando) { estado.alertas = l; salvar(); if (!document.getElementById("v-cesta").hidden) renderCesta(); } })
+      .catch(function () {});
+  }
+
+  /* ---------- alertas de preço ---------- */
+  var alertaEnviando = false, alertaDeNovo = false, alertaMsg = "";
+  function hojeISO(somaDias) { var d = new Date(Date.now() + (somaDias || 0) * 864e5 - 3 * 36e5); return d.toISOString().slice(0, 10); }
+  function alertaDe(item) { var id = chaveHist(item.busca); return estado.alertas.filter(function (a) { return a.id === id; })[0]; }
+  function diasRestantes(a) { return Math.round((Date.parse(a.expira) - Date.parse(hojeISO())) / 864e5); }
+  function enviarAlertas() {
+    if (!token()) { toast("Conecte o aparelho para usar alertas."); return; }
+    if (alertaEnviando) { alertaDeNovo = true; return; }
+    alertaEnviando = true; alertaMsg = "Enviando ao robô…"; renderCesta();
+    pedir({ modo: "alertas", lista: estado.alertas }, function (t) { alertaMsg = t; var e = document.querySelectorAll(".alerta-msg"); Array.prototype.forEach.call(e, function (x) { x.textContent = t; }); })
+      .then(function (res) { alertaEnviando = false; alertaMsg = ""; if (!alertaDeNovo) { estado.alertas = res.alertas || estado.alertas; salvar(); } toast("Alertas salvos. O robô confere todo dia às 7h40."); })
+      .catch(function (e) { alertaEnviando = false; alertaMsg = ""; toast("Alertas não foram salvos: " + e.message); })
+      .then(function () { renderCesta(); if (alertaDeNovo) { alertaDeNovo = false; enviarAlertas(); } });
+  }
+  function boxAlerta(item) {
+    var a = alertaDe(item), box = el("div", { class: "alerta" });
+    var atual = null; FARM.forEach(function (f) { var c = custo(item, item.precos[f.id]); if (c != null && (atual == null || c < atual)) atual = c; });
+    if (!a) {
+      var abrir = el("button", { type: "button", class: "btn-alerta", text: "🔔 Criar alerta de preço" });
+      abrir.addEventListener("click", function () {
+        box.textContent = "";
+        var lim = el("input", { inputmode: "decimal", value: atual ? fmtIn(Math.floor(atual * 0.9 * 100) / 100) : "", placeholder: "R$", "aria-label": "Avisar quando custar até" });
+        var dias = el("input", { type: "number", inputmode: "numeric", min: "1", max: "365", value: "30", "aria-label": "Por quantos dias" });
+        var ok = el("button", { type: "button", class: "btn-main", text: "Ligar alerta" });
+        var cancela = el("button", { type: "button", text: "Cancelar" });
+        cancela.addEventListener("click", function () { renderCesta(); });
+        ok.addEventListener("click", function () {
+          var v = numInput(lim.value), n = Math.max(1, Math.min(365, parseInt(dias.value, 10) || 30));
+          if (v == null) { lim.focus(); return; }
+          estado.alertas = estado.alertas.filter(function (x) { return x.id !== chaveHist(item.busca); });
+          estado.alertas.push({ id: chaveHist(item.busca), busca: item.busca, modo: item.modo, alvo: item.alvo, qtd: item.qtd || 1, eans: item.eans || [], limite: v, expira: hojeISO(n), ativo: true });
+          salvar(); enviarAlertas();
+        });
+        box.appendChild(el("p", { class: "nota", text: "Aviso por notificação do GitHub (no app e por e-mail) quando o custo desta linha, na quantidade escolhida, ficar igual ou abaixo de:" }));
+        box.appendChild(el("div", { class: "row" }, [el("label", { class: "campo" }, ["Até R$", lim]), el("label", { class: "campo" }, ["por", dias, "dias"])]));
+        box.appendChild(el("div", { class: "row" }, [ok, cancela]));
+      });
+      box.appendChild(abrir);
+      return box;
+    }
+    var restam = diasRestantes(a), vigente = a.ativo && restam >= 0;
+    var estadoTxt = !a.ativo ? "desligado" : restam < 0 ? "encerrado em " + a.expira.split("-").reverse().slice(0, 2).join("/") : restam === 0 ? "termina hoje" : "mais " + restam + (restam === 1 ? " dia" : " dias");
+    var chave = el("input", { type: "checkbox", "aria-label": "Alerta ligado" }); chave.checked = vigente;
+    chave.addEventListener("change", function () {
+      a.ativo = chave.checked;
+      if (chave.checked && restam < 0) a.expira = hojeISO(30);
+      salvar(); enviarAlertas();
+    });
+    var mais = el("button", { type: "button", text: "+30 dias" });
+    mais.addEventListener("click", function () { a.expira = hojeISO(Math.max(0, restam) + 30); a.ativo = true; salvar(); enviarAlertas(); });
+    var tira = el("button", { type: "button", class: "x", "aria-label": "Remover alerta", text: "×" });
+    tira.addEventListener("click", function () { estado.alertas = estado.alertas.filter(function (x) { return x !== a; }); salvar(); enviarAlertas(); });
+    box.className = "alerta" + (vigente ? " on" : "");
+    box.appendChild(el("div", { class: "row", style: "justify-content:space-between" }, [
+      el("label", { class: "incluir" }, [chave, "🔔 Alerta até " + brl(a.limite) + " · " + estadoTxt]), el("div", { class: "row" }, [mais, tira])
+    ]));
+    if (a.ultimo) box.appendChild(el("p", { class: "nota", text: "Robô conferiu em " + a.ultimo.d.split("-").reverse().slice(0, 2).join("/") + ": " + brl(a.ultimo.custo) + " na " + (NOME_F[a.ultimo.farmacia] || a.ultimo.farmacia) + (a.ultimo.custo <= a.limite ? " — dentro do limite, você foi avisado." : ".") }));
+    if (alertaEnviando) box.appendChild(el("p", { class: "nota alerta-msg", text: alertaMsg }));
+    return box;
+  }
+
   function aplicarCesta(res) {
     (res.itens || []).forEach(function (r, i) {
       var it = estado.itens[i];
@@ -748,7 +965,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
         it = estado.itens.filter(function (x) { return x.busca.trim().toLowerCase() === r.busca.trim().toLowerCase(); })[0];
       }
       if (!it) return;
-      it.alts = {}; it.erros = {};
+      it.alts = {}; it.erros = {}; it.generico = r.generico || null;
       FARM.forEach(function (f) {
         var v = r.farmacias[f.id];
         if (!v) return;
@@ -760,6 +977,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       });
     });
     estado.quando = res.quando;
+    if (res.fretes) estado.fretesAuto = res.fretes;
     salvar();
   }
 
@@ -768,9 +986,9 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     if (ocupado || !estado.itens.length) return;
     var btn = this, prog = document.getElementById("prog-cesta"), msg = document.getElementById("msg-cesta");
     ocupado = true; btn.disabled = true; prog.hidden = false; msg.className = "msg";
-    var itens = estado.itens.map(function (it) { return { busca: it.busca, modo: it.modo, alvo: it.alvo, eans: it.eans || [] }; });
-    pedir({ modo: "cesta", itens: itens }, function (t) { msg.textContent = t; })
-      .then(function (res) { aplicarCesta(res); renderCesta(); prog.hidden = true; })
+    var itens = estado.itens.map(function (it) { return { busca: it.busca, modo: it.modo, alvo: it.alvo, qtd: it.qtd || 1, eans: it.eans || [] }; });
+    pedir({ modo: "cesta", itens: itens, cep: estado.cep }, function (t) { msg.textContent = t; })
+      .then(function (res) { aplicarCesta(res); renderCesta(); prog.hidden = true; carregarDados(); })
       .catch(function (e) { msg.className = "msg err"; msg.textContent = e.message; prog.querySelector(".barra").hidden = true; })
       .then(function () { ocupado = false; btn.disabled = false; setTimeout(function () { prog.querySelector(".barra").hidden = false; }, 0); });
   });
@@ -818,7 +1036,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     if (!ultima) {
       box.appendChild(el("div", { class: "panel" }, [
         el("h2", { text: "Como funciona" }),
-        el("p", { class: "nota", text: "Digite uma substância (ex.: pseudoefedrina, loratadina, dipirona). O robô lista os produtos que a contêm, com a composição, a dose e a forma, e os preços nas cinco farmácias. Filtre pelos compostos associados, pela dose e pela forma, e toque em Adicionar à cesta." })
+        el("p", { class: "nota", text: "Digite uma substância (ex.: pseudoefedrina, loratadina, dipirona). O robô lista os produtos que a contêm, com a composição, a dose e a forma, e os preços nas sete farmácias. Filtre pelos compostos associados, pela dose e pela forma, e toque em Adicionar à cesta." })
       ]));
       return;
     }
@@ -851,7 +1069,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     }
     var visiveis = prods.filter(function (p) { return passa(p); });
     var cab = el("div", { class: "panel facetas" }, [
-      el("div", { class: "row", style: "justify-content:space-between" }, [el("h2", { text: cap(termo) }), el("span", { class: "label", text: visiveis.length + " de " + prods.length + " produtos" })]),
+      el("div", { class: "row", style: "justify-content:space-between" }, [el("h2", { text: ultima.codigo ? "Código " + ultima.codigo : cap(termo) }), el("span", { class: "label", text: visiveis.length + " de " + prods.length + " produtos" })]),
       grupo("Compostos associados", "comp", fC), grupo("Dose de " + termo, "dose", fD), grupo("Forma", "forma", fF),
       el("p", { class: "nota", text: quando(ultima.quando) + " Composição pela tabela oficial da Anvisa (CMED)." })
     ]);
@@ -901,7 +1119,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     return base;
   }
   function adicionarDaBusca(p) {
-    var it = { busca: termoCesta(p), modo: "unidade", alvo: p.unidades || 10, qtd: 1, precos: {}, alts: {}, erros: {}, eans: p.eans || [], _chave: chaveProduto(p) };
+    var it = { busca: p.termo || termoCesta(p), modo: "unidade", alvo: p.unidades || 10, qtd: 1, precos: {}, alts: {}, erros: {}, eans: p.eans || [], _chave: chaveProduto(p) };
     Object.keys(p.ofertas).forEach(function (f) { var o = p.ofertas[f]; it.precos[f] = { preco: o.preco, un: p.unidades, nome: o.nome, link: o.link }; });
     estado.itens.push(it);
     salvar();
@@ -924,6 +1142,87 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       .catch(function (e) { msg.className = "msg err"; msg.textContent = e.message; prog.querySelector(".barra").hidden = true; })
       .then(function () { ocupado = false; btn.disabled = false; });
   });
+
+  /* ---------- código de barras ---------- */
+  var leitor = { stream: null, zx: null, timer: null };
+  function pararLeitor() {
+    clearTimeout(leitor.timer);
+    if (leitor.zx) { try { leitor.zx.reset(); } catch (e) {} leitor.zx = null; }
+    if (leitor.stream) { leitor.stream.getTracks().forEach(function (t) { t.stop(); }); leitor.stream = null; }
+    document.getElementById("scanner").hidden = true;
+  }
+  function carregarZXing() {
+    if (window.ZXing) return Promise.resolve();
+    return new Promise(function (ok, falha) {
+      var sc = document.createElement("script");
+      sc.src = "https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js";
+      sc.onload = ok; sc.onerror = function () { falha(new Error("não consegui carregar o leitor")); };
+      document.head.appendChild(sc);
+    });
+  }
+  function achouCodigo(cod) {
+    pararLeitor();
+    if (navigator.vibrate) navigator.vibrate(60);
+    document.getElementById("ean").value = cod;
+    buscarEan(cod);
+  }
+  document.getElementById("ler-codigo").addEventListener("click", function () {
+    var video = document.getElementById("video"), msg = document.getElementById("msg-scanner");
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { toast("Este navegador não libera a câmera. Digite o código."); return; }
+    document.getElementById("scanner").hidden = false;
+    msg.textContent = "Abrindo a câmera…";
+    if ("BarcodeDetector" in window) {
+      var det = new window.BarcodeDetector({ formats: ["ean_13", "ean_8", "upc_a"] });
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function (st) {
+        leitor.stream = st; video.srcObject = st; return video.play();
+      }).then(function () {
+        msg.textContent = "Aponte para o código de barras da caixa.";
+        (function olha() {
+          det.detect(video).then(function (r) {
+            if (r && r.length) achouCodigo(r[0].rawValue); else leitor.timer = setTimeout(olha, 250);
+          }).catch(function () { leitor.timer = setTimeout(olha, 400); });
+        })();
+      }).catch(function () { pararLeitor(); toast("Câmera não liberada. Permita o acesso ou digite o código."); });
+      return;
+    }
+    carregarZXing().then(function () {  // iPhone e navegadores sem BarcodeDetector
+      var dicas = new Map();
+      dicas.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8, ZXing.BarcodeFormat.UPC_A]);
+      leitor.zx = new ZXing.BrowserMultiFormatReader(dicas);
+      msg.textContent = "Aponte para o código de barras da caixa.";
+      return leitor.zx.decodeFromConstraints({ video: { facingMode: "environment" } }, video, function (res) {
+        if (res) achouCodigo(res.getText());
+      });
+    }).catch(function () { pararLeitor(); toast("Câmera não liberada. Permita o acesso ou digite o código."); });
+  });
+  document.getElementById("parar-codigo").addEventListener("click", pararLeitor);
+  document.getElementById("form-ean").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var v = document.getElementById("ean").value.replace(/\D/g, "");
+    if (v.length < 8) { toast("Digite os números do código de barras (8 a 14 dígitos)."); return; }
+    buscarEan(v);
+  });
+  function buscarEan(cod) {
+    if (ocupado) return;
+    var prog = document.getElementById("prog-ean"), msg = document.getElementById("msg-ean");
+    ocupado = true; prog.hidden = false; msg.className = "msg"; prog.querySelector(".barra").hidden = false;
+    pedir({ modo: "ean", ean: cod }, function (t) { msg.textContent = t; })
+      .then(function (res) {
+        prog.hidden = true;
+        if (!res.encontrado) { msg.textContent = ""; toast("Não achei o código " + cod + " nas farmácias nem na tabela da Anvisa."); return; }
+        var pr = res.produto, precos = Object.keys(res.ofertas).map(function (f) { return res.ofertas[f].preco; });
+        var p = { termo: res.termo, nome: pr.nome, subs: pr.subs || [], doses: pr.doses || [], dose_de: null, forma: pr.forma || "não informada", unidades: pr.unidades,
+          lab: pr.lab, tipo: pr.tipo, pmc: pr.pmc, apresentacao: !!pr.subs.length, confirmado: true, eans: [res.ean], ofertas: res.ofertas,
+          menor: precos.length ? Math.min.apply(null, precos) : null };
+        p.por_un = p.menor && p.unidades ? p.menor / p.unidades : null;
+        if (!precos.length) { toast("Achei “" + pr.nome + "”, mas nenhuma farmácia está vendendo agora."); return; }
+        ultima = { termo: pr.subs[0] || pr.nome, produtos: [p], erros: {}, quando: res.quando, codigo: res.ean };
+        gravar(K.ativo, JSON.stringify(ultima)); filtros = { comp: null, dose: null, forma: null };
+        renderAtivo();
+      })
+      .catch(function (e) { msg.className = "msg err"; msg.textContent = e.message; prog.querySelector(".barra").hidden = true; })
+      .then(function () { ocupado = false; });
+  }
 
   /* ---------- vista: ajustes ---------- */
   function linkToken() {
@@ -984,15 +1283,17 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
 
   /* ---------- navegação ---------- */
   function avisoChave() { document.getElementById("sem-chave").hidden = !!token() || location.hash === "#ajustes"; }
+  var dadosCarregados = false;
   function rota() {
     var v = (location.hash || "#cesta").slice(1);
+    if (v !== "buscar") pararLeitor();
     if (["cesta", "buscar", "ajustes"].indexOf(v) < 0) v = "cesta";
     ["cesta", "buscar", "ajustes"].forEach(function (n) {
       document.getElementById("v-" + n).hidden = n !== v;
       var a = document.getElementById("aba-" + n);
       if (n === v) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     });
-    if (v === "cesta") renderCesta();
+    if (v === "cesta") { renderCesta(); if (!dadosCarregados) { dadosCarregados = true; carregarDados(); } }
     if (v === "buscar") renderAtivo();
     if (v === "ajustes") renderAjustes();
     avisoChave();
