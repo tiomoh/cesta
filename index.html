@@ -144,7 +144,12 @@ details[open] > summary::after { content: "▴"; }
 .item-head h3 { overflow-wrap: anywhere; }
 .modo { font-size: .8rem; color: rgba(var(--escura-rgb), .75); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-weight: 600; }
 .modo select, .modo input { padding: 5px 8px; font-size: 15px; }
-.modo input[type="number"] { width: 4.4rem; }
+.qtd { display: inline-flex; align-items: center; gap: 6px; }
+.stepper { display: inline-flex; align-items: center; background: var(--fundo); border: 1px solid rgba(var(--escura-rgb), .2); border-radius: 12px; padding: 2px; }
+.stepper .passo { min-height: 34px; min-width: 34px; padding: 0; border: none; background: none; font-size: 1.1rem; border-radius: 9px; }
+.stepper .passo:hover { background: #ffffff; }
+.stepper input { width: 3.2rem; text-align: center; border: none; background: transparent; padding: 4px 0; font-weight: 800; -moz-appearance: textfield; }
+.stepper input::-webkit-inner-spin-button, .stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 .farm { display: grid; grid-template-columns: minmax(0, 1fr) 6.2rem 3.8rem; gap: 6px 8px; align-items: center; padding: 9px 10px; border-radius: 12px;
   background: rgba(var(--escura-rgb), .03); border: 1px solid rgba(var(--escura-rgb), .12); }
 .farm.best { background: rgba(var(--acento-rgb), .16); border-color: var(--acento); }
@@ -214,6 +219,7 @@ article.pausado .farm, article.pausado .cols { opacity: .45; }
 .pal-op .amostra { display: flex; height: 22px; width: 96px; border-radius: 6px; overflow: hidden; flex: none; border: 1px solid rgba(0,0,0,.1); }
 .pal-op .amostra i { flex: 1; }
 .pal-op[aria-pressed="true"] { border: 2px solid var(--escura); background: rgba(var(--acento-rgb), .14); }
+.conectar { border: 2px solid var(--acento); }
 .passos { margin: 0; padding-left: 1.25rem; display: grid; gap: 8px; font-size: .9rem; }
 .ok { color: var(--escura); font-weight: 800; }
 code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento-rgb), .2); padding: 1px 5px; border-radius: 4px; }
@@ -239,7 +245,20 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
 </header>
 
 <main>
-  <p class="aviso" id="sem-chave" hidden>Falta configurar a chave do GitHub. <a href="#ajustes">Abrir Ajustes</a>.</p>
+  <section class="panel conectar" id="sem-chave" hidden aria-labelledby="t-conectar">
+    <h2 id="t-conectar">Conectar este aparelho (só uma vez)</h2>
+    <p class="nota">A página precisa de uma chave do seu GitHub para pedir as buscas ao robô. Ela fica guardada só neste aparelho.</p>
+    <ol class="passos">
+      <li>Toque em <a class="link-token" href="#" target="_blank" rel="noopener"><b>Criar chave no GitHub ↗</b></a>. O formulário já vem preenchido.</li>
+      <li>Em <b>Repository access</b>, marque <b>Only select repositories</b> → <b>DrugstoreComparison</b>.</li>
+      <li>Toque em <b>Generate token</b>, copie a chave e cole abaixo.</li>
+    </ol>
+    <div class="row">
+      <input id="token-rapido" class="grow" type="password" autocomplete="off" placeholder="github_pat_…" spellcheck="false">
+      <button class="btn-main" id="salvar-rapido" type="button">Conectar</button>
+    </div>
+    <p class="msg" id="msg-rapido" role="status"></p>
+  </section>
 
   <!-- ============ CESTA ============ -->
   <section id="v-cesta" aria-labelledby="t-rank" class="vista" style="display:grid;gap:18px">
@@ -485,16 +504,16 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       var op = el("option", { value: o[0], text: o[1] }); if (item.modo === o[0]) op.selected = true; modo.appendChild(op);
     });
     modo.addEventListener("change", function () { item.modo = modo.value; salvar(); renderCesta(); });
-    var extra;
-    if (item.modo === "unidade") {
-      var alvo = el("input", { id: "alvo-" + i, type: "number", inputmode: "numeric", min: "1", value: item.alvo || 30, "aria-label": "Unidades para comparar" });
-      alvo.addEventListener("change", function () { item.alvo = Math.max(1, parseInt(alvo.value, 10) || 30); salvar(); renderCesta(); });
-      extra = el("span", {}, ["custo de ", alvo, " un."]);
-    } else {
-      var qtd = el("input", { id: "qtd-" + i, type: "number", inputmode: "numeric", min: "1", value: item.qtd || 1, "aria-label": "Quantidade de caixas" });
-      qtd.addEventListener("change", function () { item.qtd = Math.max(1, parseInt(qtd.value, 10) || 1); salvar(); renderCesta(); });
-      extra = el("span", {}, [qtd, " cx."]);
-    }
+    // Quantidade: caixas (menor preço da caixa) ou comprimidos/unidades (melhor R$ por unidade)
+    var porUn = item.modo === "unidade", campo = porUn ? "alvo" : "qtd", padrao = porUn ? 30 : 1;
+    var qtd = el("input", { id: "qtd-" + i, type: "number", inputmode: "numeric", min: "1", value: item[campo] || padrao, "aria-label": porUn ? "Unidades necessárias" : "Quantidade de caixas" });
+    function mudaQtd(v) { item[campo] = Math.max(1, Math.min(999, v || padrao)); salvar(); renderCesta(); }
+    qtd.addEventListener("change", function () { mudaQtd(parseInt(qtd.value, 10)); });
+    var menos = el("button", { type: "button", class: "passo", "aria-label": "Diminuir quantidade", text: "−" });
+    var mais = el("button", { type: "button", class: "passo", "aria-label": "Aumentar quantidade", text: "+" });
+    menos.addEventListener("click", function () { mudaQtd((item[campo] || padrao) - 1); });
+    mais.addEventListener("click", function () { mudaQtd((item[campo] || padrao) + 1); });
+    var extra = el("span", { class: "qtd" }, [el("span", { text: "Quantidade" }), el("span", { class: "stepper" }, [menos, qtd, mais]), el("span", { text: porUn ? "unidades" : ((item.qtd || 1) > 1 ? "caixas" : "caixa") })]);
     var rem = el("button", { class: "x", type: "button", "aria-label": "Remover " + item.busca, text: "×" });
     rem.addEventListener("click", function () {
       var tirado = estado.itens.splice(i, 1)[0];
@@ -548,7 +567,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
         info.appendChild(el("div", { class: "lin" }, [el("span", { text: p.nome })]));
       }
       var c = custos[j], extraTxt = "";
-      if (item.modo === "unidade" && p.preco != null) extraTxt = p.un ? brl(p.preco / p.un) + "/un · " + item.alvo + " un = " + brl(c) : "informe as unidades";
+      if (item.modo === "unidade" && p.preco != null) extraTxt = p.un ? brl(p.preco / p.un) + "/un · " + (item.alvo || 30) + " un = " + brl(c) : "informe as unidades da caixa";
       else if (item.modo === "caixa" && (item.qtd || 1) > 1 && c != null) extraTxt = item.qtd + " cx = " + brl(c);
       if (extraTxt) info.appendChild(el("div", { class: "lin" }, [el("span", { text: "" }), el("span", { class: "num", text: extraTxt })]));
       if (info.childNodes.length) linha.appendChild(info);
@@ -912,6 +931,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     var q = "name=" + encodeURIComponent("Cesta de Farmacias") + "&description=" + encodeURIComponent("Usada pela pagina Cesta de Farmacias para acionar o robo de busca.") +
       "&target_name=" + encodeURIComponent(dono) + "&expires_in=366&actions=write&contents=read";
     document.getElementById("link-token").href = "https://github.com/settings/personal-access-tokens/new?" + q;
+    Array.prototype.forEach.call(document.querySelectorAll(".link-token"), function (a) { a.href = "https://github.com/settings/personal-access-tokens/new?" + q; });
     document.getElementById("repo-nome").textContent = repo().split("/")[1] || "";
   }
   function renderAjustes() {
@@ -924,9 +944,9 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     gravar(K.repo, /^[\w.-]+\/[\w.-]+$/.test(v) && v !== REPO_PADRAO ? v : null);
     this.value = repo(); linkToken();
   });
-  document.getElementById("salvar-token").addEventListener("click", function () {
-    var campo = document.getElementById("token"), msg = document.getElementById("msg-token"), v = campo.value.trim();
+  function conectar(v, msg, campo) {
     msg.className = "msg";
+    v = (v || "").trim();
     if (/^•+$/.test(v)) v = token();
     if (!v) { msg.className = "msg err"; msg.textContent = "Cole a chave no campo acima."; return; }
     gravar(K.token, v);
@@ -936,9 +956,27 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       return api("/actions/workflows/busca.yml");
     }).then(function (r) {
       if (!r.ok) throw new Error("A chave funciona, mas não enxerga o robô de busca (" + r.status + "). Confira a permissão Actions.");
-      msg.className = "msg ok"; msg.textContent = "Chave funcionando. Pode usar as abas Cesta e Buscar.";
-      campo.value = "••••••••••••"; avisoChave();
-    }).catch(function (e) { msg.className = "msg err"; msg.textContent = e.message; });
+      msg.className = "msg ok"; msg.textContent = "Pronto! Este aparelho está conectado.";
+      if (campo) campo.value = "••••••••••••";
+      toast("Aparelho conectado. Já pode atualizar preços e buscar.");
+      setTimeout(avisoChave, 1200);
+    }).catch(function (e) { gravar(K.token, null); msg.className = "msg err"; msg.textContent = e.message; });
+  }
+  document.getElementById("salvar-token").addEventListener("click", function () {
+    var campo = document.getElementById("token");
+    conectar(campo.value, document.getElementById("msg-token"), campo);
+  });
+  document.getElementById("salvar-rapido").addEventListener("click", function () {
+    var campo = document.getElementById("token-rapido");
+    conectar(campo.value, document.getElementById("msg-rapido"), campo);
+  });
+  // Colar a chave em qualquer lugar da página também conecta
+  document.addEventListener("paste", function (ev) {
+    var t = ((ev.clipboardData && ev.clipboardData.getData("text")) || "").trim();
+    if (token() || !/^github_pat_\w{20,}$/.test(t)) return;
+    ev.preventDefault();
+    document.getElementById("token-rapido").value = t;
+    conectar(t, document.getElementById("msg-rapido"), document.getElementById("token-rapido"));
   });
   document.getElementById("apagar-token").addEventListener("click", function () {
     gravar(K.token, null); document.getElementById("token").value = ""; document.getElementById("msg-token").textContent = "Chave apagada deste aparelho."; avisoChave();
@@ -961,6 +999,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
   }
   window.addEventListener("hashchange", rota);
   aplicarPaleta(ler(K.paleta) || "oceanic");
+  linkToken();
   if (ultima) document.getElementById("termo").value = ultima.termo || "";
   rota();
 })();
