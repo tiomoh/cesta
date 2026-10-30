@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cesta de Farmácias</title>
+<meta name="theme-color" content="#1A535C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cesta">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231A535C'/%3E%3Cpath d='M27 14h10v13h13v10H37v13H27V37H14V27h13z' fill='%234ECDC4'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231A535C'/%3E%3Cpath d='M27 14h10v13h13v10H37v13H27V37H14V27h13z' fill='%234ECDC4'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: app de uma coluna — abas no topo (Cesta / Buscar / Ajustes), cartões por produto, farmácias em linhas.
+   Paleta Oceanic Cactus: petróleo 1A535C, turquesa 4ECDC4, quase-branco F7FFF7, coral FF6B6B, amarelo FFE66D. */
+:root {
+  --petroleo: #1A535C; --turquesa: #4ECDC4; --nevoa: #F7FFF7; --coral: #FF6B6B; --sol: #FFE66D;
+  --bg: var(--nevoa); --surface: #ffffff; --ink: #12393f; --muted: #4d6f73; --line: #cfe6e2;
+  --accent: var(--petroleo); --accent-ink: var(--nevoa); --soft: #e3f7f4;
+  --best: var(--sol); --best-ink: #3b3300; --warn: #c23b3b; --warn-soft: #ffe3e3;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d2e33; --surface: #133f46; --ink: var(--nevoa); --muted: #a7cfcb; --line: #22606a;
+  --accent: var(--turquesa); --accent-ink: #082226; --soft: #17505a;
+  --best: var(--sol); --best-ink: #2e2700; --warn: var(--coral); --warn-soft: #4a2228; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0d2e33; --surface: #133f46; --ink: var(--nevoa); --muted: #a7cfcb; --line: #22606a;
+  --accent: var(--turquesa); --accent-ink: #082226; --soft: #17505a;
+  --best: var(--sol); --best-ink: #2e2700; --warn: var(--coral); --warn-soft: #4a2228; color-scheme: dark }
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px)); }
+main { max-width: 640px; margin: 0 auto; display: grid; gap: 18px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: 1.6rem; font-weight: 800; }
+h2 { font-size: 1.12rem; font-weight: 600; }
+h3 { font-size: 1rem; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--accent); }
+.label { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.nota { font-size: .84rem; color: var(--muted); }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.grow { flex: 1 1 160px; min-width: 0; }
+[hidden] { display: none !important; }
+
+/* topo */
+.topo { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg);
+  margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 12px max(16px, env(safe-area-inset-left, 0px)) 10px;
+  border-bottom: 1px solid var(--line); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.topo-in { max-width: 640px; margin: 0 auto; display: grid; gap: 10px; }
+.marca { display: flex; align-items: center; gap: 10px; }
+.marca svg { flex: none; }
+.abas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: var(--soft); padding: 4px; border-radius: 10px; }
+.abas a { text-align: center; text-decoration: none; color: var(--ink); font-weight: 700; padding: 8px 4px; border-radius: 7px; font-size: .95rem; }
+.abas a[aria-current="page"] { background: var(--accent); color: var(--accent-ink); }
+
+/* blocos */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: grid; gap: 10px; min-width: 0; }
+button, .btn { font: 700 .95rem var(--body); border-radius: 9px; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  padding: 10px 14px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; }
+button:disabled { opacity: .55; cursor: default; }
+.btn-main { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn-coral { background: var(--coral); color: #2b0606; border-color: var(--coral); }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--turquesa); outline-offset: 2px; }
+input, select { font: 16px var(--body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; min-width: 0; }
+.x { border: none; background: none; color: var(--muted); min-height: 36px; padding: 4px 8px; font-size: 1.3rem; line-height: 1; }
+
+/* progresso */
+.prog { display: grid; gap: 8px; }
+.barra { height: 6px; border-radius: 3px; background: var(--soft); overflow: hidden; }
+.barra i { display: block; height: 100%; width: 30%; background: var(--turquesa); border-radius: 3px; }
+@media (prefers-reduced-motion: no-preference) { .barra i { animation: vai 1.4s ease-in-out infinite; } }
+@keyframes vai { 0% { transform: translateX(-100%); } 100% { transform: translateX(340%); } }
+.msg { font-size: .9rem; }
+.msg.err { color: var(--warn); }
+.aviso { background: var(--warn-soft); color: var(--ink); border-radius: 9px; padding: 10px 12px; font-size: .9rem; }
+
+/* ranking */
+.rank { display: grid; gap: 4px; }
+.rank-row { display: grid; grid-template-columns: 1.7rem 1fr auto; gap: 8px; align-items: baseline; padding: 8px 10px; border-radius: 8px; }
+.rank-row.first { background: var(--best); color: var(--best-ink); }
+.rank-row .pos { font-family: var(--mono); color: var(--muted); }
+.rank-row.first .pos { color: inherit; }
+.rank-row .nome { font-weight: 700; }
+.falta { font-size: .8rem; color: var(--warn); font-weight: 400; margin-left: 6px; }
+.rank-row.first .falta { color: inherit; }
+.total { font-family: var(--mono); font-weight: 600; font-size: 1.05rem; }
+.combo { border-top: 1px dashed var(--line); padding-top: 10px; font-size: .92rem; color: var(--muted); }
+.combo b { color: var(--ink); }
+
+/* itens da cesta */
+.item-head { display: flex; gap: 8px; align-items: flex-start; justify-content: space-between; }
+.item-head h3 { overflow-wrap: anywhere; }
+.modo { font-size: .85rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.modo select, .modo input { padding: 5px 8px; font-size: 15px; }
+.modo input { width: 4.4rem; }
+.farm { display: grid; grid-template-columns: minmax(0, 1fr) 6.2rem 3.8rem; gap: 6px 8px; align-items: center; padding: 8px; border-radius: 9px; border: 1px solid transparent; }
+.farm.best { background: var(--best); color: var(--best-ink); }
+.farm a.loja { color: inherit; font-weight: 700; text-decoration: none; display: flex; flex-direction: column; min-width: 0; }
+.farm a.loja span.ver { font-size: .78rem; color: var(--accent); font-weight: 700; }
+.farm.best a.loja span.ver { color: var(--best-ink); text-decoration: underline; }
+.farm input { width: 100%; font-family: var(--mono); text-align: right; padding: 8px 6px; }
+.farm .info { grid-column: 1 / -1; font-size: .8rem; color: var(--muted); display: grid; gap: 4px; min-width: 0; }
+.farm.best .info { color: var(--best-ink); }
+.farm .info select { font-size: .8rem; padding: 4px 6px; width: 100%; background: var(--surface); }
+.farm .info .lin { display: flex; justify-content: space-between; gap: 8px; min-width: 0; }
+.farm .info .lin span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.farm .erro-f { grid-column: 1 / -1; font-size: .78rem; color: var(--warn); }
+.cols { display: grid; grid-template-columns: minmax(0, 1fr) 6.2rem 3.8rem; gap: 8px; padding: 0 8px; }
+.cols span:not(:first-child) { text-align: right; }
+
+/* busca por princípio ativo */
+.facetas { display: grid; gap: 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 700 .85rem var(--body); border-radius: 999px; padding: 6px 12px; min-height: 36px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.chip .n { font-family: var(--mono); font-weight: 500; opacity: .75; margin-left: 4px; }
+.prod { display: grid; gap: 8px; }
+.prod-head { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.prod-head h3 { overflow-wrap: anywhere; }
+.preco-min { text-align: right; flex: none; }
+.preco-min .v { font-family: var(--mono); font-weight: 600; font-size: 1.1rem; display: block; }
+.preco-min .u { font-size: .78rem; color: var(--muted); }
+.comp { font-size: .92rem; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: .74rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: var(--soft); color: var(--ink); }
+.tag.alerta { background: var(--warn-soft); }
+.ofertas { display: grid; gap: 2px; }
+.of { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr) auto; gap: 8px; align-items: baseline; font-size: .88rem; padding: 4px 6px; border-radius: 6px; }
+.of.best { background: var(--best); color: var(--best-ink); }
+.of a { color: inherit; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.of .p { font-family: var(--mono); }
+
+/* ajustes */
+.passos { margin: 0; padding-left: 1.25rem; display: grid; gap: 8px; }
+.ok { color: var(--accent); font-weight: 700; }
+code { font-family: var(--mono); font-size: .88em; background: var(--soft); padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="topo-in">
+    <div class="marca">
+      <svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1A535C"/><path d="M27 14h10v13h13v10H37v13H27V37H14V27h13z" fill="#4ECDC4"/></svg>
+      <h1>Cesta de Farmácias</h1>
+    </div>
+    <nav class="abas" aria-label="Seções">
+      <a href="#cesta" id="aba-cesta">Cesta</a>
+      <a href="#buscar" id="aba-buscar">Buscar</a>
+      <a href="#ajustes" id="aba-ajustes">Ajustes</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <p class="aviso" id="sem-chave" hidden>Falta configurar a chave do GitHub. <a href="#ajustes">Abrir Ajustes</a>.</p>
+
+  <!-- ============ CESTA ============ -->
+  <section id="v-cesta" aria-labelledby="t-rank" class="vista" style="display:grid;gap:18px">
+    <div class="panel">
+      <div class="row" style="justify-content:space-between"><h2 id="t-rank">Quanto sai a cesta</h2><span class="label" id="rank-status"></span></div>
+      <div class="rank" id="rank"></div>
+      <div class="combo" id="combo"></div>
+    </div>
+    <div class="panel">
+      <div class="row" style="justify-content:space-between">
+        <button class="btn-main grow" id="atualizar" type="button">Atualizar preços</button>
+      </div>
+      <div class="prog" id="prog-cesta" hidden><div class="barra"><i></i></div><p class="msg" id="msg-cesta" role="status"></p></div>
+      <p class="nota" id="quando-cesta"></p>
+    </div>
+    <div class="row" style="justify-content:space-between"><h2>Produtos</h2><button id="zerar" type="button">Apagar preços</button></div>
+    <div id="itens" style="display:grid;gap:14px"></div>
+    <form class="panel" id="novo">
+      <label class="label" for="novo-busca">Adicionar produto</label>
+      <div class="row">
+        <input id="novo-busca" class="grow" placeholder="ex.: Dipirona 1g" autocomplete="off">
+        <select id="novo-modo" aria-label="Como comparar">
+          <option value="caixa">menor preço da caixa</option>
+          <option value="unidade">melhor R$ por unidade</option>
+        </select>
+        <button class="btn-main" type="submit">Adicionar</button>
+      </div>
+      <p class="nota">Escreva como no site: nome e dose. O robô só aceita produtos que contenham todas as palavras. Para escolher por composição, use a aba <a href="#buscar">Buscar</a>.</p>
+    </form>
+  </section>
+
+  <!-- ============ BUSCAR ============ -->
+  <section id="v-buscar" class="vista" style="display:grid;gap:18px" hidden>
+    <form class="panel" id="form-ativo">
+      <label class="label" for="termo">Princípio ativo</label>
+      <div class="row">
+        <input id="termo" class="grow" placeholder="ex.: pseudoefedrina" autocomplete="off" autocapitalize="none">
+        <button class="btn-main" type="submit" id="btn-ativo">Buscar</button>
+      </div>
+      <p class="nota">Consulta a tabela oficial da Anvisa (CMED) e as cinco farmácias. Leva cerca de meio minuto.</p>
+      <div class="prog" id="prog-ativo" hidden><div class="barra"><i></i></div><p class="msg" id="msg-ativo" role="status"></p></div>
+    </form>
+    <div id="res-ativo" style="display:grid;gap:14px"></div>
+  </section>
+
+  <!-- ============ AJUSTES ============ -->
+  <section id="v-ajustes" class="vista" style="display:grid;gap:18px" hidden>
+    <div class="panel">
+      <h2>Chave do GitHub</h2>
+      <p class="nota">A página usa uma chave para pedir ao robô do seu repositório que faça as buscas. A chave fica guardada só neste aparelho.</p>
+      <ol class="passos">
+        <li>Toque em <a id="link-token" href="#" target="_blank" rel="noopener"><b>Criar chave no GitHub</b></a> (o formulário já vem preenchido).</li>
+        <li>Em <b>Repository access</b>, escolha <b>Only select repositories</b> e marque <code id="repo-nome">DrugstoreComparison</code>.</li>
+        <li>Confira em <b>Permissions</b>: <b>Actions: Read and write</b> e <b>Contents: Read-only</b>.</li>
+        <li>Toque em <b>Generate token</b>, copie a chave (começa com <code>github_pat_</code>) e cole abaixo.</li>
+      </ol>
+      <label class="label" for="token">Chave</label>
+      <input id="token" type="password" autocomplete="off" placeholder="github_pat_…" spellcheck="false">
+      <div class="row"><button class="btn-main" id="salvar-token" type="button">Salvar e testar</button><button id="apagar-token" type="button">Apagar chave</button></div>
+      <p class="msg" id="msg-token" role="status"></p>
+    </div>
+    <div class="panel">
+      <h2>Repositório</h2>
+      <label class="label" for="repo">Dono/nome</label>
+      <input id="repo" autocomplete="off" spellcheck="false" autocapitalize="none">
+      <p class="nota">Só mude se mover o projeto de lugar.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var FARM = [
+    { id: "araujo", nome: "Araújo", url: function (q) { return "https://www.araujo.com.br/" + q + "?_q=" + q + "&map=ft"; } },
+    { id: "raia", nome: "Droga Raia", url: function (q) { return "https://www.drogaraia.com.br/search?w=" + q; } },
+    { id: "pacheco", nome: "Pacheco", url: function (q) { return "https://www.drogariaspacheco.com.br/busca?q=" + q; } },
+    { id: "drogasil", nome: "Drogasil", url: function (q) { return "https://www.drogasil.com.br/search?w=" + q; } },
+    { id: "ultrafarma", nome: "Ultrafarma", url: function (q) { return "https://www.ultrafarma.com.br/busca?q=" + q; } }
+  ];
+  var NOME_F = {}; FARM.forEach(function (f) { NOME_F[f.id] = f.nome; });
+  var K = { estado: "cesta-v2", token: "cesta-token", repo: "cesta-repo", ativo: "cesta-ultima-busca" };
+  var REPO_PADRAO = "tiomoh/DrugstoreComparison";
+  var EXEMPLO = { itens: [
+    { busca: "Finasterida 1mg", modo: "unidade", alvo: 30, qtd: 1, precos: {} },
+    { busca: "Neolefrin Dia", modo: "caixa", alvo: 30, qtd: 1, precos: {} },
+    { busca: "Neosaldina Muscular Max", modo: "caixa", alvo: 30, qtd: 1, precos: {} }
+  ], quando: null };
+
+  /* ---------- armazenamento ---------- */
+  function ler(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function gravar(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+  function lerJSON(k) { try { return JSON.parse(ler(k)); } catch (e) { return null; } }
+
+  var estado = (function () {
+    var s = lerJSON(K.estado);
+    if (!s || !Array.isArray(s.itens)) {
+      var antigo = lerJSON("cesta-farmacias-v1");
+      s = antigo && Array.isArray(antigo.itens) ? antigo : JSON.parse(JSON.stringify(EXEMPLO));
+    }
+    s.itens.forEach(function (it) { it.precos = it.precos || {}; it.alts = it.alts || {}; it.erros = it.erros || {}; });
+    return s;
+  })();
+  function salvar() { gravar(K.estado, JSON.stringify(estado)); }
+  function repo() { return (ler(K.repo) || REPO_PADRAO).trim(); }
+  function token() { return (ler(K.token) || "").trim(); }
+
+  /* ---------- utilidades ---------- */
+  function brl(v) { return v == null ? "—" : v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); }
+  function fmtIn(v) { return v == null ? "" : v.toFixed(2).replace(".", ","); }
+  function numInput(v) { if (v === "" || v == null) return null; var s = String(v).trim(); if (/,/.test(s)) s = s.replace(/\./g, "").replace(",", "."); var n = parseFloat(s); return isFinite(n) && n > 0 ? n : null; }
+  function el(tag, attrs, kids) {
+    var e = document.createElement(tag);
+    for (var k in (attrs || {})) { if (k === "text") e.textContent = attrs[k]; else if (k === "class") e.className = attrs[k]; else e.setAttribute(k, attrs[k]); }
+    (kids || []).forEach(function (c) { if (c) e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return e;
+  }
+  function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+  function quando(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    return "Preços de " + d.toLocaleDateString("pt-BR") + " às " + d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) + ".";
+  }
+
+  /* ---------- GitHub ---------- */
+  function api(caminho, opts) {
+    opts = opts || {};
+    var h = { "Authorization": "Bearer " + token(), "Accept": opts.accept || "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" };
+    if (opts.body) h["Content-Type"] = "application/json";
+    return fetch("https://api.github.com/repos/" + repo() + caminho, { method: opts.method || "GET", headers: h, body: opts.body ? JSON.stringify(opts.body) : undefined, cache: "no-store" });
+  }
+  function explicaHTTP(st) {
+    if (st === 401) return "A chave foi recusada pelo GitHub (expirou ou foi copiada errada). Gere outra em Ajustes.";
+    if (st === 403) return "A chave não tem permissão suficiente. Confira em Ajustes: Actions (Read and write) e Contents (Read-only).";
+    if (st === 404) return "Repositório ou robô não encontrado. Confira se a chave dá acesso a " + repo() + ".";
+    if (st === 422) return "O GitHub recusou o pedido (dados inválidos).";
+    return "O GitHub respondeu com erro " + st + ". Tente de novo em instantes.";
+  }
+  function novoId() { return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8); }
+  function espera(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  // Aciona o robô e espera o resultado. onFase(texto) recebe o andamento.
+  function pedir(pedido, onFase) {
+    if (!token()) return Promise.reject(new Error("Configure a chave do GitHub em Ajustes."));
+    var id = novoId(), inicio = Date.now();
+    function seg() { return Math.round((Date.now() - inicio) / 1000) + " s"; }
+    onFase("Enviando pedido ao robô…");
+    return api("/actions/workflows/busca.yml/dispatches", { method: "POST", body: { ref: "main", inputs: { id: id, pedido: JSON.stringify(pedido) } } })
+      .then(function (r) { if (r.status !== 204) throw new Error(explicaHTTP(r.status)); })
+      .then(function () {
+        var fase = "Na fila do GitHub", rodada = 0;
+        function volta() {
+          if (Date.now() - inicio > 240000) throw new Error("O robô demorou mais de 4 minutos. Tente de novo; se repetir, o GitHub pode estar instável.");
+          rodada++;
+          var checaRun = rodada % 2 === 0 ? api("/actions/workflows/busca.yml/runs?event=workflow_dispatch&per_page=10").then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+            var run = j && (j.workflow_runs || []).filter(function (w) { return w.display_title === "busca " + id; })[0];
+            if (!run) return;
+            if (run.status === "in_progress") fase = "Consultando as farmácias";
+            if (run.status === "completed" && run.conclusion !== "success") throw new Error("O robô falhou nesta busca. Tente de novo; se repetir, me avise.");
+          }).catch(function (e) { if (/robô falhou/.test(e.message)) throw e; }) : Promise.resolve();
+          return checaRun.then(function () {
+            onFase(fase + "… " + seg());
+            return api("/contents/r/" + id + ".json?ref=resultados&t=" + Date.now(), { accept: "application/vnd.github.raw+json" });
+          }).then(function (r) {
+            if (r.status === 200) return r.json();
+            if (r.status === 404) return espera(2500).then(volta);
+            if (r.status === 401 || r.status === 403) throw new Error(explicaHTTP(r.status));
+            return espera(4000).then(volta);
+          });
+        }
+        return espera(4000).then(volta);
+      })
+      .then(function (res) {
+        if (!res.ok) throw new Error("O robô não conseguiu completar: " + (res.erro || "erro desconhecido"));
+        return res;
+      });
+  }
+
+  /* ---------- cálculo da cesta ---------- */
+  function custo(item, p) {
+    if (!p || p.preco == null) return null;
+    if (item.modo === "unidade") { if (!p.un) return null; return p.preco / p.un * (item.alvo || p.un); }
+    return p.preco * (item.qtd || 1);
+  }
+
+  /* ---------- vista: cesta ---------- */
+  function renderCesta() {
+    var box = document.getElementById("itens");
+    box.textContent = "";
+    estado.itens.forEach(function (item, i) { box.appendChild(cartao(item, i)); });
+    resumo();
+    document.getElementById("quando-cesta").textContent = estado.quando ? quando(estado.quando) : "Toque em Atualizar preços para o robô consultar as cinco farmácias.";
+  }
+
+  function cartao(item, i) {
+    var q = encodeURIComponent(item.busca.trim());
+    var custos = FARM.map(function (f) { return custo(item, item.precos[f.id]); });
+    var validos = custos.filter(function (c) { return c != null; });
+    var min = validos.length ? Math.min.apply(null, validos) : null;
+
+    var modo = el("select", { id: "modo-" + i, "aria-label": "Como comparar " + item.busca });
+    [["caixa", "menor preço da caixa"], ["unidade", "melhor R$ por unidade"]].forEach(function (o) {
+      var op = el("option", { value: o[0], text: o[1] }); if (item.modo === o[0]) op.selected = true; modo.appendChild(op);
+    });
+    modo.addEventListener("change", function () { item.modo = modo.value; salvar(); renderCesta(); });
+    var extra;
+    if (item.modo === "unidade") {
+      var alvo = el("input", { id: "alvo-" + i, type: "number", inputmode: "numeric", min: "1", value: item.alvo || 30, "aria-label": "Unidades para comparar" });
+      alvo.addEventListener("change", function () { item.alvo = Math.max(1, parseInt(alvo.value, 10) || 30); salvar(); renderCesta(); });
+      extra = el("span", {}, ["custo de ", alvo, " un."]);
+    } else {
+      var qtd = el("input", { id: "qtd-" + i, type: "number", inputmode: "numeric", min: "1", value: item.qtd || 1, "aria-label": "Quantidade de caixas" });
+      qtd.addEventListener("change", function () { item.qtd = Math.max(1, parseInt(qtd.value, 10) || 1); salvar(); renderCesta(); });
+      extra = el("span", {}, [qtd, " cx."]);
+    }
+    var rem = el("button", { class: "x", type: "button", "aria-label": "Remover " + item.busca, text: "×" });
+    rem.addEventListener("click", function () { estado.itens.splice(i, 1); salvar(); renderCesta(); });
+
+    var card = el("article", { class: "panel" }, [
+      el("div", { class: "item-head" }, [el("h3", { text: item.busca }), rem]),
+      el("div", { class: "modo" }, [modo, extra]),
+      el("div", { class: "cols label" }, [el("span", { text: "Farmácia" }), el("span", { text: "Preço" }), el("span", { text: item.modo === "unidade" ? "Unid." : "" })])
+    ]);
+
+    FARM.forEach(function (f, j) {
+      var p = item.precos[f.id] || {};
+      var linha = el("div", { class: "farm" + (min != null && custos[j] === min ? " best" : "") });
+      linha.appendChild(el("a", { class: "loja", href: p.link || f.url(q), target: "_blank", rel: "noopener" }, [el("span", { text: f.nome }), el("span", { class: "ver", text: p.link ? "ver produto ↗" : "buscar ↗" })]));
+      var preco = el("input", { id: "p-" + i + "-" + f.id, inputmode: "decimal", placeholder: "R$", value: fmtIn(p.preco), "aria-label": "Preço na " + f.nome, autocomplete: "off" });
+      var un = el("input", { id: "u-" + i + "-" + f.id, type: "number", inputmode: "numeric", placeholder: "un", value: p.un || "", "aria-label": "Unidades na caixa, " + f.nome });
+      function atualiza() {
+        var np = numInput(preco.value), nu = parseInt(un.value, 10) || null;
+        if (np == null && nu == null) delete item.precos[f.id];
+        else { var ant = item.precos[f.id] || {}; var igual = ant.preco === np; item.precos[f.id] = { preco: np, un: nu, nome: igual ? ant.nome : null, link: igual ? ant.link : null }; }
+        salvar(); renderCesta();
+      }
+      preco.addEventListener("change", atualiza); un.addEventListener("change", atualiza);
+      linha.appendChild(preco);
+      linha.appendChild(item.modo === "unidade" ? un : el("span"));
+
+      var alts = (item.alts && item.alts[f.id]) || [];
+      var info = el("div", { class: "info" });
+      if (alts.length > 1) {
+        var sel = el("select", { id: "alt-" + i + "-" + f.id, "aria-label": "Escolher produto na " + f.nome });
+        alts.forEach(function (o, k) {
+          var t = brl(o.preco) + (o.unidades ? " · " + o.unidades + " un" : "") + " · " + o.nome;
+          var op = el("option", { value: String(k), text: t });
+          if (p.link && o.link === p.link) op.selected = true;
+          sel.appendChild(op);
+        });
+        sel.addEventListener("change", function () {
+          var o = alts[parseInt(sel.value, 10)];
+          item.precos[f.id] = { preco: o.preco, un: o.unidades, nome: o.nome, link: o.link };
+          salvar(); renderCesta();
+        });
+        info.appendChild(sel);
+      } else if (p.nome) {
+        info.appendChild(el("div", { class: "lin" }, [el("span", { text: p.nome })]));
+      }
+      var c = custos[j], extraTxt = "";
+      if (item.modo === "unidade" && p.preco != null) extraTxt = p.un ? brl(p.preco / p.un) + "/un · " + item.alvo + " un = " + brl(c) : "informe as unidades";
+      else if (item.modo === "caixa" && (item.qtd || 1) > 1 && c != null) extraTxt = item.qtd + " cx = " + brl(c);
+      if (extraTxt) info.appendChild(el("div", { class: "lin" }, [el("span", { text: "" }), el("span", { class: "num", text: extraTxt })]));
+      if (info.childNodes.length) linha.appendChild(info);
+      if (item.erros && item.erros[f.id] && p.preco == null) linha.appendChild(el("p", { class: "erro-f", text: "Não consegui consultar agora. Toque no nome para conferir no site." }));
+      card.appendChild(linha);
+    });
+    return card;
+  }
+
+  function resumo() {
+    var n = estado.itens.length;
+    var linhas = FARM.map(function (f) {
+      var total = 0, falta = 0;
+      estado.itens.forEach(function (it) { var c = custo(it, it.precos[f.id]); if (c == null) falta++; else total += c; });
+      return { f: f, total: total, falta: falta };
+    });
+    linhas.sort(function (a, b) { return (a.falta - b.falta) || (a.total - b.total); });
+    var rank = document.getElementById("rank");
+    rank.textContent = "";
+    var completas = 0;
+    linhas.forEach(function (l, k) {
+      var cheia = l.falta === 0 && n > 0;
+      if (cheia) completas++;
+      var nome = el("span", { class: "nome" }, [l.f.nome]);
+      if (!cheia) nome.appendChild(el("span", { class: "falta", text: l.falta === n ? "sem preços" : "faltam " + l.falta }));
+      rank.appendChild(el("div", { class: "rank-row" + (k === 0 && cheia ? " first" : "") }, [
+        el("span", { class: "pos", text: cheia ? (k + 1) + "º" : "–" }), nome, el("span", { class: "total", text: l.total > 0 ? brl(l.total) : "—" })
+      ]));
+    });
+    document.getElementById("rank-status").textContent = n ? completas + " de 5 completas" : "cesta vazia";
+    var soma = 0, ok = n > 0, partes = [];
+    estado.itens.forEach(function (it) {
+      var best = null;
+      FARM.forEach(function (f) { var c = custo(it, it.precos[f.id]); if (c != null && (!best || c < best.c)) best = { c: c, f: f }; });
+      if (!best) ok = false; else { soma += best.c; partes.push(it.busca + " na " + best.f.nome); }
+    });
+    var combo = document.getElementById("combo");
+    combo.textContent = "";
+    if (ok) {
+      combo.appendChild(document.createTextNode("Comprando cada item onde é mais barato: "));
+      combo.appendChild(el("b", { class: "num", text: brl(soma) }));
+      combo.appendChild(document.createTextNode(" (" + partes.join("; ") + "). Frete não incluído."));
+    } else {
+      combo.textContent = "Os totais comparam só o preço dos produtos. Frete e retirada variam por CEP.";
+    }
+  }
+
+  function aplicarCesta(res) {
+    (res.itens || []).forEach(function (r, i) {
+      var it = estado.itens[i];
+      if (!it || it.busca.trim().toLowerCase() !== r.busca.trim().toLowerCase()) {
+        it = estado.itens.filter(function (x) { return x.busca.trim().toLowerCase() === r.busca.trim().toLowerCase(); })[0];
+      }
+      if (!it) return;
+      it.alts = {}; it.erros = {};
+      FARM.forEach(function (f) {
+        var v = r.farmacias[f.id];
+        if (!v) return;
+        if (v.erro) { it.erros[f.id] = v.erro; delete it.precos[f.id]; return; }
+        it.alts[f.id] = v.ofertas || [];
+        var o = (v.ofertas || [])[0];
+        if (o) it.precos[f.id] = { preco: o.preco, un: o.unidades, nome: o.nome, link: o.link };
+        else delete it.precos[f.id];
+      });
+    });
+    estado.quando = res.quando;
+    salvar();
+  }
+
+  var ocupado = false;
+  document.getElementById("atualizar").addEventListener("click", function () {
+    if (ocupado || !estado.itens.length) return;
+    var btn = this, prog = document.getElementById("prog-cesta"), msg = document.getElementById("msg-cesta");
+    ocupado = true; btn.disabled = true; prog.hidden = false; msg.className = "msg";
+    var itens = estado.itens.map(function (it) { return { busca: it.busca, modo: it.modo, alvo: it.alvo, eans: it.eans || [] }; });
+    pedir({ modo: "cesta", itens: itens }, function (t) { msg.textContent = t; })
+      .then(function (res) { aplicarCesta(res); renderCesta(); prog.hidden = true; })
+      .catch(function (e) { msg.className = "msg err"; msg.textContent = e.message; prog.querySelector(".barra").hidden = true; })
+      .then(function () { ocupado = false; btn.disabled = false; setTimeout(function () { prog.querySelector(".barra").hidden = false; }, 0); });
+  });
+
+  document.getElementById("novo").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var b = document.getElementById("novo-busca"), t = b.value.trim();
+    if (!t) { b.focus(); return; }
+    estado.itens.push({ busca: t, modo: document.getElementById("novo-modo").value, alvo: 30, qtd: 1, precos: {}, alts: {}, erros: {} });
+    b.value = ""; salvar(); renderCesta();
+  });
+  var zerarArmado = false;
+  document.getElementById("zerar").addEventListener("click", function () {
+    if (!zerarArmado) { zerarArmado = true; this.textContent = "Toque de novo para apagar"; return; }
+    estado.itens.forEach(function (it) { it.precos = {}; it.alts = {}; it.erros = {}; });
+    estado.quando = null; zerarArmado = false; this.textContent = "Apagar preços"; salvar(); renderCesta();
+  });
+
+  /* ---------- vista: buscar por princípio ativo ---------- */
+  var ultima = lerJSON(K.ativo);
+  var filtros = { comp: null, dose: null, forma: null };
+
+  function semAcento(s) { return (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
+  function virgula(s) { return String(s).replace(/(\d)\.(\d)/g, "$1,$2"); }
+  function facetaComp(p, termo) {
+    var t = semAcento(termo), outros = p.subs.filter(function (s) { return s.indexOf(t) < 0; });
+    return outros.length ? "+ " + outros.join(" + ") : "só " + termo;
+  }
+  function facetaDose(p, termo) {
+    var t = semAcento(termo);
+    if (p.dose_de) { for (var s in p.dose_de) if (s.indexOf(t) >= 0) return virgula(p.dose_de[s]); }
+    if (p.subs.length === 1 && p.doses.length === 1) return virgula(p.doses[0]);
+    if (p.doses.length) return virgula(p.doses.map(function (d) { return d.split(" ")[0]; }).join(" + ") + " " + p.doses[0].split(" ").slice(1).join(" "));
+    return "não informada";
+  }
+  function composicao(p) {
+    if (p.dose_de) return virgula(p.subs.map(function (s) { return cap(s) + " " + (p.dose_de[s] || ""); }).join(" + "));
+    var s = p.subs.map(cap).join(" + ");
+    return p.doses.length ? s + " (" + virgula(p.doses.join(" + ")) + ")" : s;
+  }
+
+  function renderAtivo() {
+    var box = document.getElementById("res-ativo");
+    box.textContent = "";
+    if (!ultima) {
+      box.appendChild(el("div", { class: "panel" }, [
+        el("h2", { text: "Como funciona" }),
+        el("p", { class: "nota", text: "Digite uma substância (ex.: pseudoefedrina, loratadina, dipirona). O robô lista os produtos que a contêm, com a composição, a dose e a forma, e os preços nas cinco farmácias. Filtre pelos compostos associados, pela dose e pela forma, e toque em Adicionar à cesta." })
+      ]));
+      return;
+    }
+    var termo = ultima.termo, prods = ultima.produtos || [];
+    var fC = {}, fD = {}, fF = {};
+    prods.forEach(function (p) {
+      p._c = facetaComp(p, termo); p._d = facetaDose(p, termo); p._f = p.forma;
+    });
+    function passa(p, ignora) {
+      return (ignora === "comp" || !filtros.comp || p._c === filtros.comp) &&
+             (ignora === "dose" || !filtros.dose || p._d === filtros.dose) &&
+             (ignora === "forma" || !filtros.forma || p._f === filtros.forma);
+    }
+    prods.forEach(function (p) {
+      if (passa(p, "comp")) fC[p._c] = (fC[p._c] || 0) + 1;
+      if (passa(p, "dose")) fD[p._d] = (fD[p._d] || 0) + 1;
+      if (passa(p, "forma")) fF[p._f] = (fF[p._f] || 0) + 1;
+    });
+    function grupo(titulo, chave, contagem) {
+      var chips = el("div", { class: "chips" });
+      var todos = el("button", { class: "chip", type: "button", "aria-pressed": String(!filtros[chave]), text: "Todos" });
+      todos.addEventListener("click", function () { filtros[chave] = null; renderAtivo(); });
+      chips.appendChild(todos);
+      Object.keys(contagem).sort(function (a, b) { return a.localeCompare(b, "pt-BR", { numeric: true }); }).forEach(function (v) {
+        var c = el("button", { class: "chip", type: "button", "aria-pressed": String(filtros[chave] === v) }, [v, el("span", { class: "n", text: String(contagem[v]) })]);
+        c.addEventListener("click", function () { filtros[chave] = filtros[chave] === v ? null : v; renderAtivo(); });
+        chips.appendChild(c);
+      });
+      return el("div", { style: "display:grid;gap:6px" }, [el("span", { class: "label", text: titulo }), chips]);
+    }
+    var visiveis = prods.filter(function (p) { return passa(p); });
+    var cab = el("div", { class: "panel facetas" }, [
+      el("div", { class: "row", style: "justify-content:space-between" }, [el("h2", { text: cap(termo) }), el("span", { class: "label", text: visiveis.length + " de " + prods.length + " produtos" })]),
+      grupo("Compostos associados", "comp", fC), grupo("Dose de " + termo, "dose", fD), grupo("Forma", "forma", fF),
+      el("p", { class: "nota", text: quando(ultima.quando) + " Composição pela tabela oficial da Anvisa (CMED)." })
+    ]);
+    box.appendChild(cab);
+    var erros = Object.keys(ultima.erros || {});
+    if (erros.length) box.appendChild(el("p", { class: "aviso", text: "Não consegui consultar: " + erros.map(function (f) { return NOME_F[f] || f; }).join(", ") + ". Os preços dessas farmácias podem estar faltando." }));
+    if (!prods.length) box.appendChild(el("div", { class: "panel" }, [el("p", { text: "Nenhum produto encontrado. Confira a grafia da substância (sem o sal: “pseudoefedrina”, não “cloridrato de pseudoefedrina”)." })]));
+    visiveis.forEach(function (p) { box.appendChild(cartaoProduto(p, termo)); });
+  }
+
+  function cartaoProduto(p, termo) {
+    var tags = el("div", { class: "tags" });
+    if (p.tipo) tags.appendChild(el("span", { class: "tag", text: cap(p.tipo) }));
+    if (p.lab) tags.appendChild(el("span", { class: "tag", text: p.lab }));
+    tags.appendChild(el("span", { class: "tag", text: cap(p.forma) }));
+    if (p.unidades) tags.appendChild(el("span", { class: "tag", text: p.unidades + " un" }));
+    if (!p.confirmado && !p.apresentacao) tags.appendChild(el("span", { class: "tag alerta", text: "composição não confirmada" }));
+    var ofs = el("div", { class: "ofertas" });
+    var lista = Object.keys(p.ofertas).map(function (f) { return { f: f, o: p.ofertas[f] }; }).sort(function (a, b) { return a.o.preco - b.o.preco; });
+    lista.forEach(function (x, k) {
+      ofs.appendChild(el("div", { class: "of" + (k === 0 ? " best" : "") }, [
+        el("span", { text: NOME_F[x.f] || x.f }), el("a", { href: x.o.link || "#", target: "_blank", rel: "noopener", text: x.o.nome }), el("span", { class: "p", text: brl(x.o.preco) })
+      ]));
+    });
+    var faltam = FARM.filter(function (f) { return !p.ofertas[f.id]; }).map(function (f) { return f.nome; });
+    var jaNaCesta = estado.itens.some(function (it) { return it._chave === chaveProduto(p); });
+    var add = el("button", { class: jaNaCesta ? "" : "btn-main", type: "button", text: jaNaCesta ? "Na cesta ✓" : "Adicionar à cesta" });
+    if (jaNaCesta) add.disabled = true;
+    add.addEventListener("click", function () { adicionarDaBusca(p); add.textContent = "Na cesta ✓"; add.className = ""; add.disabled = true; });
+    return el("article", { class: "panel prod" }, [
+      el("div", { class: "prod-head" }, [
+        el("div", { style: "display:grid;gap:4px;min-width:0" }, [el("h3", { text: p.nome }), el("p", { class: "comp", text: composicao(p) })]),
+        el("div", { class: "preco-min" }, [el("span", { class: "v", text: brl(p.menor) }), el("span", { class: "u", text: p.por_un ? brl(p.por_un) + "/un" : "" })])
+      ]),
+      tags, ofs,
+      faltam.length ? el("p", { class: "nota", text: "Não encontrado em: " + faltam.join(", ") + "." }) : null,
+      p.pmc ? el("p", { class: "nota", text: "Preço máximo permitido (PMC, MG): " + brl(p.pmc) + "." }) : null,
+      add
+    ]);
+  }
+
+  function chaveProduto(p) { return [p.nome, p.doses.join("+"), p.forma, p.unidades].join("|"); }
+  function termoCesta(p) {
+    // nome comercial sem sais e conectores, para o robô achar o mesmo produto depois
+    var tira = /^(cloridrato|sulfato|maleato|de|do|da|e|\+)$/i;
+    var base = p.nome.split(/\s+/).filter(function (w) { return !tira.test(w); }).slice(0, 4).join(" ");
+    return base;
+  }
+  function adicionarDaBusca(p) {
+    var it = { busca: termoCesta(p), modo: "unidade", alvo: p.unidades || 10, qtd: 1, precos: {}, alts: {}, erros: {}, eans: p.eans || [], _chave: chaveProduto(p) };
+    Object.keys(p.ofertas).forEach(function (f) { var o = p.ofertas[f]; it.precos[f] = { preco: o.preco, un: p.unidades, nome: o.nome, link: o.link }; });
+    estado.itens.push(it);
+    salvar();
+  }
+
+  document.getElementById("form-ativo").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    if (ocupado) return;
+    var campo = document.getElementById("termo"), termo = campo.value.trim();
+    if (!termo) { campo.focus(); return; }
+    var btn = document.getElementById("btn-ativo"), prog = document.getElementById("prog-ativo"), msg = document.getElementById("msg-ativo");
+    ocupado = true; btn.disabled = true; prog.hidden = false; msg.className = "msg"; prog.querySelector(".barra").hidden = false;
+    pedir({ modo: "ativo", termo: termo }, function (t) { msg.textContent = t; })
+      .then(function (res) {
+        ultima = { termo: res.termo, produtos: res.produtos, erros: res.erros, quando: res.quando };
+        gravar(K.ativo, JSON.stringify(ultima));
+        filtros = { comp: null, dose: null, forma: null };
+        prog.hidden = true; renderAtivo();
+      })
+      .catch(function (e) { msg.className = "msg err"; msg.textContent = e.message; prog.querySelector(".barra").hidden = true; })
+      .then(function () { ocupado = false; btn.disabled = false; });
+  });
+
+  /* ---------- vista: ajustes ---------- */
+  function linkToken() {
+    var dono = repo().split("/")[0];
+    var q = "name=" + encodeURIComponent("Cesta de Farmacias") + "&description=" + encodeURIComponent("Usada pela pagina Cesta de Farmacias para acionar o robo de busca.") +
+      "&target_name=" + encodeURIComponent(dono) + "&expires_in=366&actions=write&contents=read";
+    document.getElementById("link-token").href = "https://github.com/settings/personal-access-tokens/new?" + q;
+    document.getElementById("repo-nome").textContent = repo().split("/")[1] || "";
+  }
+  function renderAjustes() {
+    document.getElementById("repo").value = repo();
+    document.getElementById("token").value = token() ? "••••••••••••" : "";
+    linkToken();
+  }
+  document.getElementById("repo").addEventListener("change", function () {
+    var v = this.value.trim();
+    gravar(K.repo, /^[\w.-]+\/[\w.-]+$/.test(v) && v !== REPO_PADRAO ? v : null);
+    this.value = repo(); linkToken();
+  });
+  document.getElementById("salvar-token").addEventListener("click", function () {
+    var campo = document.getElementById("token"), msg = document.getElementById("msg-token"), v = campo.value.trim();
+    msg.className = "msg";
+    if (/^•+$/.test(v)) v = token();
+    if (!v) { msg.className = "msg err"; msg.textContent = "Cole a chave no campo acima."; return; }
+    gravar(K.token, v);
+    msg.textContent = "Testando…";
+    api("").then(function (r) {
+      if (!r.ok) throw new Error(explicaHTTP(r.status));
+      return api("/actions/workflows/busca.yml");
+    }).then(function (r) {
+      if (!r.ok) throw new Error("A chave funciona, mas não enxerga o robô de busca (" + r.status + "). Confira a permissão Actions.");
+      msg.className = "msg ok"; msg.textContent = "Chave funcionando. Pode usar as abas Cesta e Buscar.";
+      campo.value = "••••••••••••"; avisoChave();
+    }).catch(function (e) { msg.className = "msg err"; msg.textContent = e.message; });
+  });
+  document.getElementById("apagar-token").addEventListener("click", function () {
+    gravar(K.token, null); document.getElementById("token").value = ""; document.getElementById("msg-token").textContent = "Chave apagada deste aparelho."; avisoChave();
+  });
+
+  /* ---------- navegação ---------- */
+  function avisoChave() { document.getElementById("sem-chave").hidden = !!token() || location.hash === "#ajustes"; }
+  function rota() {
+    var v = (location.hash || "#cesta").slice(1);
+    if (["cesta", "buscar", "ajustes"].indexOf(v) < 0) v = "cesta";
+    ["cesta", "buscar", "ajustes"].forEach(function (n) {
+      document.getElementById("v-" + n).hidden = n !== v;
+      var a = document.getElementById("aba-" + n);
+      if (n === v) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+    });
+    if (v === "cesta") renderCesta();
+    if (v === "buscar") renderAtivo();
+    if (v === "ajustes") renderAjustes();
+    avisoChave();
+  }
+  window.addEventListener("hashchange", rota);
+  if (ultima) document.getElementById("termo").value = ultima.termo || "";
+  rota();
+})();
+</script>
+</body>
+</html>
