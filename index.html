@@ -216,6 +216,9 @@ article.pausado .farm, article.pausado .cols { opacity: .45; }
 .ofertas { display: grid; gap: 4px; }
 .of { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr) auto; gap: 8px; align-items: baseline; font-size: .82rem; padding: 6px 8px; border-radius: 9px; background: rgba(var(--escura-rgb), .03); }
 .of span:first-child { font-weight: 800; color: var(--escura); }
+.of .p { text-align: right; font-family: var(--mono); font-weight: 800; white-space: nowrap; }
+.of .p small { display: block; font-family: var(--font); font-weight: 600; font-size: .7rem; color: rgba(var(--escura-rgb), .75); }
+.chips.caixas .chip { min-height: 36px; padding: 4px 10px; }
 .of.best { background: rgba(var(--acento-rgb), .18); outline: 1px solid var(--acento); }
 .of a { color: rgba(var(--escura-rgb), .85); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .of .p { font-family: var(--mono); font-weight: 800; color: var(--escura); }
@@ -1218,7 +1221,7 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       ]));
       return;
     }
-    var termo = ultima.termo, prods = ultima.produtos || [];
+    var termo = ultima.termo, prods = agrupar(ultima.produtos || []);
     var fC = {}, fD = {}, fF = {}, fT = {};
     prods.forEach(function (p) {
       p._c = facetaComp(p, termo); p._d = facetaDose(p, termo); p._f = p.forma; p._t = nomeTipo(p.tipo);
@@ -1263,42 +1266,108 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     box.appendChild(cab);
     var erros = Object.keys(ultima.erros || {});
     if (erros.length) box.appendChild(el("p", { class: "aviso", text: "Não consegui consultar: " + erros.map(function (f) { return NOME_F[f] || f; }).join(", ") + ". Os preços dessas farmácias podem estar faltando." }));
-    if (!prods.length) box.appendChild(el("div", { class: "panel" }, [el("p", { text: "Nenhum produto encontrado. Confira a grafia da substância ou do nome comercial (sem o sal: “metformina”, não “cloridrato de metformina”)." })]));
+    if (!(ultima.produtos || []).length) box.appendChild(el("div", { class: "panel" }, [el("p", { text: "Nenhum produto encontrado. Confira a grafia da substância ou do nome comercial (sem o sal: “metformina”, não “cloridrato de metformina”)." })]));
     else if (!visiveis.length) box.appendChild(el("div", { class: "panel" }, [el("p", { text: "Nenhum produto com esses filtros. Toque em “Todos” em algum grupo para ampliar." })]));
-    visiveis.forEach(function (p) { box.appendChild(cartaoProduto(p, termo)); });
+    visiveis.forEach(function (g) { box.appendChild(cartaoGrupo(g)); });
   }
 
-  function cartaoProduto(p, termo) {
-    var tags = el("div", { class: "tags" });
-    if (p.tipo) tags.appendChild(el("span", { class: "tag", text: cap(p.tipo) }));
-    if (p.lab) tags.appendChild(el("span", { class: "tag", text: p.lab }));
-    tags.appendChild(el("span", { class: "tag", text: cap(p.forma) }));
-    if (p.unidades) tags.appendChild(el("span", { class: "tag", text: p.unidades + " un" }));
-    if (!p.confirmado && !p.apresentacao) tags.appendChild(el("span", { class: "tag alerta", text: "composição não confirmada" }));
+  // O robô devolve uma linha por apresentação (caixa de 24, 30, 72...). Na tela, o mesmo produto
+  // vira um cartão só, com as caixas como opções, comparadas pelo preço por unidade.
+  function agrupar(prods) {
+    var grupos = {}, ordem = [];
+    prods.forEach(function (p) {
+      var generico = /^gen/.test(p.tipo || "");
+      var k = [p.nome, p.doses.join("+"), p.forma, p.tipo, generico ? "" : p.lab].join("|");
+      if (!grupos[k]) { grupos[k] = { chave: k, nome: p.nome, subs: p.subs, doses: p.doses, dose_de: p.dose_de, forma: p.forma, tipo: p.tipo, lab: p.lab, confirmado: false, apresentacao: false, membros: [] }; ordem.push(grupos[k]); }
+      var g = grupos[k];
+      g.membros.push(p);
+      g.confirmado = g.confirmado || p.confirmado; g.apresentacao = g.apresentacao || p.apresentacao;
+      if (!g.dose_de && p.dose_de) g.dose_de = p.dose_de;
+      if (g.lab !== p.lab) g.lab = generico ? "" : g.lab;
+    });
+    ordem.forEach(function (g) {
+      // vários laboratórios de genérico com a mesma caixa: fica uma entrada por tamanho, com o menor preço de cada farmácia
+      var porUn = {};
+      g.membros.forEach(function (p) {
+        var u = p.unidades || 0, m = porUn[u];
+        if (!m) { porUn[u] = { unidades: p.unidades, pmc: p.pmc, eans: (p.eans || []).slice(), ofertas: {} }; m = porUn[u]; }
+        else { (p.eans || []).forEach(function (e) { if (m.eans.indexOf(e) < 0) m.eans.push(e); }); if (p.pmc && (!m.pmc || p.pmc < m.pmc)) m.pmc = p.pmc; }
+        Object.keys(p.ofertas).forEach(function (f) { var o = p.ofertas[f]; if (!m.ofertas[f] || o.preco < m.ofertas[f].preco) m.ofertas[f] = o; });
+      });
+      g.caixas = Object.keys(porUn).map(function (u) { return porUn[u]; }).sort(function (a, b) { return (a.unidades || 0) - (b.unidades || 0); });
+      var melhor = null;
+      g.caixas.forEach(function (c) { Object.keys(c.ofertas).forEach(function (f) {
+        var o = c.ofertas[f], pu = c.unidades ? o.preco / c.unidades : null;
+        if (!melhor || (pu != null && (melhor.pu == null || pu < melhor.pu)) || (pu == null && melhor.pu == null && o.preco < melhor.o.preco)) melhor = { f: f, o: o, pu: pu, c: c };
+      }); });
+      g.melhor = melhor;
+    });
+    return ordem.sort(function (a, b) { return ((a.melhor && a.melhor.pu) || 9e9) - ((b.melhor && b.melhor.pu) || 9e9); });
+  }
+  var caixaEscolhida = {};  // cartão -> tamanho de caixa escolhido (0 = todas)
+  function cartaoGrupo(g) {
+    var ped = (ultima && ultima.pedidoUn) || null;
+    var esc = caixaEscolhida[g.chave];
+    if (esc == null) esc = ped && g.caixas.some(function (c) { return c.unidades === ped; }) ? ped : 0;
+    if (g.caixas.length === 1) esc = g.caixas[0].unidades || 0;
+    var caixa = esc ? g.caixas.filter(function (c) { return c.unidades === esc; })[0] : null;
+    if (esc && !caixa) { esc = 0; caixa = null; }
+    // linhas: com uma caixa escolhida, os preços dela; em "todas", a caixa de menor preço por unidade em cada farmácia
+    var linhas = {};
+    (caixa ? [caixa] : g.caixas).forEach(function (c) { Object.keys(c.ofertas).forEach(function (f) {
+      var o = c.ofertas[f], pu = c.unidades ? o.preco / c.unidades : null, at = linhas[f];
+      if (!at || (pu != null && (at.pu == null || pu < at.pu)) || (pu == null && at.pu == null && o.preco < at.o.preco)) linhas[f] = { f: f, o: o, pu: pu, un: c.unidades };
+    }); });
+    var lista = Object.keys(linhas).map(function (f) { return linhas[f]; }).sort(function (a, b) { return caixa ? a.o.preco - b.o.preco : ((a.pu == null ? 9e9 : a.pu) - (b.pu == null ? 9e9 : b.pu)); });
     var ofs = el("div", { class: "ofertas" });
-    var lista = Object.keys(p.ofertas).map(function (f) { return { f: f, o: p.ofertas[f] }; }).sort(function (a, b) { return a.o.preco - b.o.preco; });
     lista.forEach(function (x, k) {
       ofs.appendChild(el("div", { class: "of" + (k === 0 ? " best" : "") }, [
-        el("span", { text: NOME_F[x.f] || x.f }), el("a", { href: x.o.link || "#", target: "_blank", rel: "noopener", text: x.o.nome }), el("span", { class: "p", text: brl(x.o.preco) })
+        el("span", { text: NOME_F[x.f] || x.f }), el("a", { href: x.o.link || "#", target: "_blank", rel: "noopener", text: x.o.nome }),
+        el("span", { class: "p" }, [brl(x.o.preco), x.un ? el("small", { text: (caixa ? "" : x.un + " un · ") + brl(x.pu) + "/un" }) : null])
       ]));
     });
-    var faltam = FARM.filter(function (f) { return !p.ofertas[f.id]; }).map(function (f) { return f.nome; });
-    var jaNaCesta = estado.itens.some(function (it) { return it._chave === chaveProduto(p); });
+    var tags = el("div", { class: "tags" });
+    if (g.tipo) tags.appendChild(el("span", { class: "tag", text: cap(g.tipo) }));
+    if (g.lab) tags.appendChild(el("span", { class: "tag", text: g.lab }));
+    tags.appendChild(el("span", { class: "tag", text: cap(g.forma) }));
+    if (!g.confirmado && !g.apresentacao) tags.appendChild(el("span", { class: "tag alerta", text: "composição não confirmada" }));
+    var escolha = null;
+    if (g.caixas.length > 1) {
+      escolha = el("div", { class: "chips caixas" });
+      var todas = el("button", { class: "chip", type: "button", "aria-pressed": String(!esc), text: "Todas as caixas" });
+      todas.addEventListener("click", function () { caixaEscolhida[g.chave] = 0; renderAtivo(); });
+      escolha.appendChild(todas);
+      g.caixas.forEach(function (c) {
+        var b = el("button", { class: "chip", type: "button", "aria-pressed": String(esc === c.unidades), text: c.unidades ? c.unidades + " un" : "sem nº" });
+        b.addEventListener("click", function () { caixaEscolhida[g.chave] = c.unidades || 0; renderAtivo(); });
+        escolha.appendChild(b);
+      });
+    } else if (g.caixas[0].unidades) tags.appendChild(el("span", { class: "tag", text: g.caixas[0].unidades + " un" }));
+    var top = lista[0];
+    var faltam = FARM.filter(function (f) { return !linhas[f.id]; }).map(function (f) { return f.nome; });
+    // o que vai para a cesta: a caixa escolhida, ou (em "todas") o melhor R$/unidade de cada farmácia
+    var paraCesta = { nome: g.nome, doses: g.doses, forma: g.forma, unidades: caixa ? caixa.unidades : (top && top.un), eans: [], ofertas: {}, _chave: g.chave + "|" + (esc || "todas") };
+    (caixa ? [caixa] : g.caixas).forEach(function (c) { c.eans.forEach(function (e) { if (paraCesta.eans.indexOf(e) < 0) paraCesta.eans.push(e); }); });
+    lista.forEach(function (x) { paraCesta.ofertas[x.f] = { preco: x.o.preco, nome: x.o.nome, link: x.o.link, un: x.un }; });
+    var jaNaCesta = estado.itens.some(function (it) { return it._chave === paraCesta._chave; });
     var add = el("button", { class: jaNaCesta ? "" : "btn-main", type: "button", text: jaNaCesta ? "Na cesta ✓" : "Adicionar à cesta" });
     if (jaNaCesta) add.disabled = true;
     add.addEventListener("click", function () {
       if (estado.itens.length >= LIMITE_ITENS) { toast("A cesta já tem " + LIMITE_ITENS + " itens, o máximo."); return; }
-      adicionarDaBusca(p); add.textContent = "Na cesta ✓"; add.className = ""; add.disabled = true;
+      adicionarDaBusca(paraCesta); add.textContent = "Na cesta ✓"; add.className = ""; add.disabled = true;
       toast("Adicionado à cesta.", "Ver cesta", function () { location.hash = "#cesta"; });
     });
+    var pmc = caixa ? caixa.pmc : top && top.un ? (g.caixas.filter(function (c) { return c.unidades === top.un; })[0] || {}).pmc : null;
     return el("article", { class: "panel prod" }, [
       el("div", { class: "prod-head" }, [
-        el("div", { style: "display:grid;gap:4px;min-width:0" }, [el("h3", { text: p.nome }), el("p", { class: "comp", text: composicao(p) })]),
-        el("div", { class: "preco-min" }, [el("span", { class: "v", text: brl(p.menor) }), el("span", { class: "u", text: p.por_un ? brl(p.por_un) + "/un" : "" })])
+        el("div", { style: "display:grid;gap:4px;min-width:0" }, [el("h3", { text: g.nome }), el("p", { class: "comp", text: composicao(g) })]),
+        el("div", { class: "preco-min" }, top ? [el("span", { class: "v", text: brl(top.o.preco) }), el("span", { class: "u", text: top.pu != null ? brl(top.pu) + "/un" + (caixa ? "" : " · caixa de " + top.un) : "" })] : [])
       ]),
-      tags, ofs,
+      tags,
+      escolha ? el("div", { style: "display:grid;gap:4px" }, [el("span", { class: "label", text: "Tamanho da caixa" }), escolha]) : null,
+      ofs,
       faltam.length ? el("p", { class: "nota", text: "Não encontrado em: " + faltam.join(", ") + "." }) : null,
-      p.pmc ? el("p", { class: "nota", text: "Preço máximo permitido (PMC, MG): " + brl(p.pmc) + "." }) : null,
+      pmc ? el("p", { class: "nota", text: "Preço máximo permitido (PMC, MG)" + (caixa ? "" : " da caixa de " + top.un) + ": " + brl(pmc) + "." }) : null,
       add
     ]);
   }
@@ -1311,8 +1380,8 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
     return base;
   }
   function adicionarDaBusca(p) {
-    var it = { busca: p.termo || termoCesta(p), modo: p.unidades ? "unidade" : "caixa", alvo: p.unidades || 10, qtd: 1, precos: {}, alts: {}, erros: {}, eans: p.eans || [], _chave: chaveProduto(p) };
-    Object.keys(p.ofertas).forEach(function (f) { var o = p.ofertas[f]; it.precos[f] = { preco: o.preco, un: p.unidades, nome: o.nome, link: o.link }; });
+    var it = { busca: p.termo || termoCesta(p), modo: p.unidades ? "unidade" : "caixa", alvo: p.unidades || 10, qtd: 1, precos: {}, alts: {}, erros: {}, eans: p.eans || [], _chave: p._chave || chaveProduto(p) };
+    Object.keys(p.ofertas).forEach(function (f) { var o = p.ofertas[f]; it.precos[f] = { preco: o.preco, un: o.un || p.unidades, nome: o.nome, link: o.link }; });
     estado.itens.push(it);
     salvar();
   }
@@ -1328,7 +1397,8 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(var(--acento
       .then(function (res) {
         var fp = filtrosDoPedido(res);
         filtros = fp.filtros;
-        ultima = { termo: res.termo, produtos: res.produtos, erros: res.erros, quando: res.quando, entendi: fp.entendi, filtros: filtros };
+        ultima = { termo: res.termo, produtos: res.produtos, erros: res.erros, quando: res.quando, entendi: fp.entendi, filtros: filtros, pedidoUn: (res.pedido || {}).unidades || null };
+        caixaEscolhida = {};
         gravar(K.ativo, JSON.stringify(ultima));
         prog.hidden = true; renderAtivo();
       })
